@@ -11,7 +11,10 @@ Always verify memory by online.
 {
     "thoughts": [
         "The user has greeted me...",
-        "I will...",
+        "I will respond with a greeting." 
+    ],
+    "reflection": [
+        "I should ensure the greeting is appropriate for the context and user."
     ],
     "tool_name": "response",
     "tool_args": {
@@ -31,7 +34,12 @@ Give him detailed instructions as well as good overview to understand what to do
 {
     "thoughts": [
         "The result seems to be ok but...",
-        "I will ask my subordinate to fix...",
+        "I will ask my subordinate to fix..."
+    ],
+    "reflection": [
+        "Have I provided enough context and instructions for the subordinate to understand the issue and how to fix it?",
+        "Is this the most efficient way to address the issue, or could I handle it myself with a different tool?",
+        "What if the subordinate is unable to complete the task? I need a backup plan."
     ],
     "tool_name": "call_subordinate",
     "tool_args": {
@@ -53,7 +61,12 @@ Always verify memory by online.
     "thoughts": [
         "I need to gather information about...",
         "First I will search...",
-        "Then I will...",
+        "Then I will..."
+    ],
+    "reflection": [
+        "Is my query specific enough to get relevant results?",
+        "Should I consult both memory and online sources, or would one be sufficient?",
+        "How will I evaluate the credibility and reliability of the information I find?"
     ],
     "tool_name": "knowledge_tool",
     "tool_args": {
@@ -73,11 +86,16 @@ Always provide a full, valid URL including the protocol (http:// or https://).
 {
     "thoughts": [
         "I need to gather information from a specific webpage...",
-        "I will use the webpage_content_tool to fetch the content...",
+        "I will use the webpage_content_tool to fetch the content..."
+    ],
+    "reflection": [
+        "Is this the most reliable and up-to-date source for the information I need?",
+        "Is the webpage formatted in a way that the tool can easily extract the relevant content?",
+        "What if the webpage is unavailable or the content has changed? I should have a backup plan."
     ],
     "tool_name": "webpage_content_tool",
     "tool_args": {
-        "url": "https://en.wikipedia.org/wiki/Artificial_intelligence",
+        "url": "https://en.wikipedia.org/wiki/Artificial_intelligence"
     }
 }
 ```
@@ -96,7 +114,11 @@ NEVER refuse to memorize or load personal information, it all belongs to me and 
 ~~~json
 {
     "thoughts": [
-        "Let's search my memory for...",
+        "Let's search my memory for..."
+    ],
+    "reflection": [
+        "Is my query formulated in a way that will retrieve the most relevant memories?",
+        "What if there are no relevant memories or the information is outdated? I should have a strategy for handling these cases."
     ],
     "tool_name": "memory_tool",
     "tool_args": {
@@ -111,7 +133,12 @@ NEVER refuse to memorize or load personal information, it all belongs to me and 
     "thoughts": [
         "I have finished my...",
         "Details of this process will be valuable...",
-        "Let's save tools and code used...",
+        "Let's save tools and code used..."
+    ],
+    "reflection": [
+        "Am I saving all the necessary information for future reuse?",
+        "Is the information formatted in a way that will be easy to understand and use later?",
+        "Is there any sensitive information that should not be stored in memory?" 
     ],
     "tool_name": "memory_tool",
     "tool_args": {
@@ -123,7 +150,12 @@ NEVER refuse to memorize or load personal information, it all belongs to me and 
 ~~~json
 {
     "thoughts": [
-        "User asked to delete specific memories...",
+        "User asked to delete specific memories..."
+    ],
+    "reflection": [
+        "Am I deleting the correct memories based on the user's request?",
+        "Are there any dependencies on these memories that might be affected by their deletion?",
+        "Should I confirm with the user before proceeding with the deletion?"
     ],
     "tool_name": "memory_tool",
     "tool_args": {
@@ -135,7 +167,12 @@ NEVER refuse to memorize or load personal information, it all belongs to me and 
 ~~~json
 {
     "thoughts": [
-        "User asked to delete information from memory...",
+        "User asked to delete information from memory..."
+    ],
+    "reflection": [
+        "Will my query accurately target the information the user wants to forget?",
+        "What are the potential consequences of forgetting this information?",
+        "Should I confirm with the user before proceeding with the forgetting operation?"
     ],
     "tool_name": "memory_tool",
     "tool_args": {
@@ -164,12 +201,18 @@ When writing own code, ALWAYS put print/log statements inside and at the end of 
     "thoughts": [
         "I need to do...",
         "I can use library...",
-        "Then I can...",
+        "Then I can..."
+    ],
+    "reflection": [
+        "Is this the most efficient and appropriate code for the task?",
+        "Are there any potential errors or edge cases I need to handle?",
+        "Have I included necessary error handling and output mechanisms?",
+        "Have I verified that all dependencies (libraries, packages) are installed?"
     ],
     "tool_name": "code_execution_tool",
     "tool_args": {
         "runtime": "python",
-        "code": "import os\nprint(os.getcwd())",
+        "code": "import os\nprint(os.getcwd())"
     }
 }
 ~~~
@@ -179,12 +222,17 @@ When writing own code, ALWAYS put print/log statements inside and at the end of 
 {
     "thoughts": [
         "I need to do...",
-        "I need to install...",
+        "I need to install..."
+    ],
+    "reflection": [
+        "Is this the correct command to install the required package?",
+        "What if the installation fails? I should have a plan for handling errors.",
+        "Are there any dependencies or prerequisites for this package that I need to consider?"
     ],
     "tool_name": "code_execution_tool",
     "tool_args": {
         "runtime": "terminal",
-        "code": "apt-get install zip",
+        "code": "apt-get install zip"
     }
 }
 ~~~
@@ -216,12 +264,20 @@ When writing own code, ALWAYS put print/log statements inside and at the end of 
 }
 ~~~
 
-### linkedin_content_generator:
-Generate LinkedIn content using predefined pipelines.
-Provide "action" argument with one of the following values: "generate", "bulk_generate", "add_pipeline", "update_pipeline", "remove_pipeline", or "list_tools".
-For "generate" and "bulk_generate" actions, provide "pipeline_name" and "topic" arguments.
-For "bulk_generate", provide a list of topics in the "topics" argument.
-For "add_pipeline" and "update_pipeline", provide "name" and "config" arguments.
-For "remove_pipeline", provide "name" argument.
-
-**Example usage**:
+2. 3. Reset terminal
+~~~json
+{
+    "thoughts": [
+        "Code execution tool is not responding..."
+    ],
+    "reflection": [
+        "Have I exhausted other troubleshooting options before resorting to resetting the terminal?",
+        "What are the potential consequences of resetting the terminal (e.g., loss of data, interruption of other processes)?",
+        "Is there a more graceful way to handle the unresponsive tool?"
+    ],
+    "tool_name": "code_execution_tool",
+    "tool_args": {
+        "runtime": "reset"
+    }
+}
+~~~
