@@ -5,12 +5,10 @@ from typing import Any, Optional, Dict, List
 import uuid
 from python.helpers import extract_tools, rate_limiter, files, errors
 from python.helpers.print_style import PrintStyle
-from langchain.schema import AIMessage
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_core.messages import HumanMessage, SystemMessage
-from langchain_core.language_models.chat_models import BaseChatModel
-from langchain_core.language_models.llms import BaseLLM
-from langchain_core.embeddings import Embeddings
+from langchain.schema import ChatPromptTemplate, MessagesPlaceholder, HumanMessage, SystemMessage
+from langchain.chat_models import BaseChatModel
+from langchain.llms import BaseLLM
+from langchain.embeddings import Embeddings
 import python.helpers.log as Log
 from python.helpers.dirty_json import DirtyJson
 from python.helpers.defer import DeferredTask
@@ -137,7 +135,6 @@ class Agent:
     def __init__(
         self, number: int, config: AgentConfig, context: AgentContext | None = None
     ):
-
         # agent config
         self.config = config
 
