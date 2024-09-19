@@ -1,5 +1,5 @@
-# Use the latest slim version of Debian
-FROM --platform=$TARGETPLATFORM debian:bookworm-slim
+# Use the latest Kali Linux base image
+FROM --platform=$TARGETPLATFORM kalilinux/kali-rolling
 
 # Set ARG for platform-specific commands
 ARG TARGETPLATFORM
@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Set up SSH
-RUN mkdir /var/run/sshd && \
+RUN mkdir -p /var/run/sshd && \
     echo 'root:toor' | chpasswd && \
     sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
 
@@ -39,5 +39,4 @@ EXPOSE 22
 
 # Init .bashrc
 CMD ["/usr/local/bin/initialize.sh"]
-
 
