@@ -1,0 +1,124 @@
+{
+  "system_name": "Agent Zero",
+  "version": "1.0.0",
+  "purpose_overview": "Agent Zero is a personal, organic agentic framework that grows and learns with you. It provides a fully-customizable, transparent, and interactive AI agent system that uses the operating system as a tool.",
+  "problem_addressed": "Need for adaptive AI agents",
+  "target_users": "Developers, Researchers, Power Users",
+  "key_capabilities": "Multi-agent, Memory, Skills",
+  "key_features": [
+    "Multi-agent hierarchy with subordinate delegation",
+    "Persistent memory with vector-based recall",
+    "SKILL.md standard for extensible capabilities",
+    "26+ extension hook points for customization",
+    "Real-time streaming with interactive web UI",
+    "MCP server support",
+    "Browser automation",
+    "Project isolation with per-project configuration"
+  ],
+  "technologies": "Python, LiteLLM, Docker",
+  "algorithms": "Vector Similarity, RAG",
+  "data_structures": "Knowledge Graphs, Memory Fragments",
+  "workflows": "Conversation, Task Delegation",
+  "interfaces": "Web UI, CLI, API",
+  "use_cases_summary": "Development, Research, Automation",
+  "getting_started": "1. Clone the repository\n2. Configure your LLM provider in settings\n3. Run with Docker or directly via Python\n4. Access the web UI at http://localhost:80",
+  "components": [
+    {
+      "name": "Agent Core",
+      "purpose": "Central agent logic managing message loops and tool invocation",
+      "functionality": "Processes user messages, orchestrates tools, manages context",
+      "interactions": ["Tools System", "Memory System", "Extensions"],
+      "technical_details": "Implemented in agent.py with AgentContext and Agent classes"
+    },
+    {
+      "name": "Memory System",
+      "purpose": "Persistent knowledge storage and retrieval",
+      "functionality": "Stores, searches, and recalls information using vector embeddings",
+      "interactions": ["Agent Core", "Skills System"],
+      "technical_details": "Uses embedding models for semantic similarity search"
+    },
+    {
+      "name": "Skills System",
+      "purpose": "Extensible capability modules using SKILL.md standard",
+      "functionality": "Loads, searches, and executes contextually relevant skills",
+      "interactions": ["Memory System", "Agent Core"],
+      "technical_details": "Skills are indexed in vector memory for semantic recall"
+    },
+    {
+      "name": "Tools System",
+      "purpose": "Agent interaction capabilities with external systems",
+      "functionality": "Code execution, web search, browser automation, file operations",
+      "interactions": ["Agent Core"],
+      "technical_details": "19 built-in tools with sandboxed execution"
+    },
+    {
+      "name": "Extensions Framework",
+      "purpose": "Hook-based customization system",
+      "functionality": "26+ extension points for modifying agent behavior at various stages",
+      "interactions": ["Agent Core", "Memory System", "Skills System"],
+      "technical_details": "Python extensions loaded from extensions/ directory"
+    }
+  ],
+  "functionality": {
+    "core": [
+      {
+        "name": "Conversation Processing",
+        "description": "Handles user messages through the agent message loop",
+        "use_cases": ["Chat interaction", "Task delegation", "Multi-turn reasoning"],
+        "examples": ["Ask questions", "Request code generation", "Delegate to subordinates"]
+      },
+      {
+        "name": "Code Execution",
+        "description": "Sandboxed execution of Python, Node.js, and shell scripts",
+        "use_cases": ["Running code", "System administration", "Data processing"],
+        "examples": ["Execute Python scripts", "Run terminal commands", "Process files"]
+      },
+      {
+        "name": "Memory Management",
+        "description": "Persistent storage and semantic recall of information",
+        "use_cases": ["Learning from interactions", "Recalling solutions", "Building knowledge"],
+        "examples": ["Save useful information", "Recall past solutions", "Build expertise"]
+      }
+    ],
+    "advanced": [
+      "Multi-agent hierarchy with role-based subordinates",
+      "Browser automation for web interaction",
+      "MCP server integration",
+      "Behaviour adjustment at runtime"
+    ]
+  },
+  "technical": {
+    "specifications": "Python 3.10+, LiteLLM for multi-provider LLM support, Docker for containerization",
+    "api_reference": "40+ API endpoints for chat, settings, memory, skills, and project management",
+    "implementation": "Core agent loop in agent.py, model abstraction in models.py, tool system in python/tools/"
+  },
+  "user_guide": {
+    "installation": "1. Clone repository\n2. Copy .env.example to .env\n3. Configure API keys\n4. Run: docker compose up",
+    "basic_usage": "1. Open web UI\n2. Type messages in chat\n3. Agent processes and responds\n4. Use skills and tools as needed",
+    "troubleshooting": "- Check API keys in .env\n- Verify Docker is running\n- Check logs/ for error details"
+  },
+  "appendices": {
+    "glossary": {
+      "Agent": "An AI entity that processes messages and executes tools",
+      "Subordinate": "A child agent delegated to handle specific tasks",
+      "SKILL.md": "Standard format for defining agent capabilities",
+      "Extension": "A hook-based customization module",
+      "Memory Fragment": "A piece of stored information with vector embedding"
+    },
+    "faq": [
+      {
+        "question": "How do I add a new skill?",
+        "answer": "Create a directory under skills/custom/ with a SKILL.md file following the standard format."
+      },
+      {
+        "question": "Can I use multiple LLM providers?",
+        "answer": "Yes, Agent Zero supports 20+ providers through LiteLLM integration."
+      }
+    ],
+    "resources": [
+      "GitHub Repository: https://github.com/frdel/agent-zero",
+      "SKILL.md Standard Documentation",
+      "LiteLLM Documentation: https://docs.litellm.ai"
+    ]
+  }
+}

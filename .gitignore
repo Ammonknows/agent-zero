@@ -39,6 +39,9 @@ skills/**
 # Explicitly allow the builtin folder in skills
 !skills/builtin/
 !skills/builtin/**
+# Allow the custom folder in skills (PRISM and user skills)
+!skills/custom/
+!skills/custom/**
 
 # Global rule to include .gitkeep files anywhere
 !**/.gitkeep
