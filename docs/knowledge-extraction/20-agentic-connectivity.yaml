@@ -1,0 +1,146 @@
+##############################################################################
+#  δ₂₀ AGENTIC-CONNECTIVITY DIMENSION — External Integration
+##############################################################################
+
+dimension:
+  id: "δ₂₀"
+  name: "AGENTIC-CONNECTIVITY"
+  priority: P1
+  completeness: 1.0
+  confidence: 0.88
+
+sub_dimensions:
+
+  σ₂₀.₁_rest_api:
+    description: "73 REST API endpoints, authentication, context management"
+    content:
+      server: "run_ui.py — Flask + Starlette (uvicorn)"
+      port: "9000 (default, range 9000-9009)"
+      authentication:
+        api_key: "X-API-Key header"
+        csrf: "CSRF token protection for web UI"
+        session: "Flask session management"
+      endpoint_categories:
+        chat: "create, load, reset, remove, export"
+        messages: "send, async, queue"
+        agents: "list, subagents"
+        settings: "get, set"
+        knowledge: "reindex, import, path"
+        skills: "list, import, preview"
+        scheduler: "create, delete, run, update, list, tick"
+        notifications: "create, history, mark_read, clear"
+        files: "list, upload, download, edit, delete, rename, info"
+        mcp: "servers_status, servers_apply, server_detail, server_log"
+        system: "health, restart, pause, nudge, poll"
+        backup: "create, defaults, inspect, preview, restore"
+        media: "synthesize (TTS), transcribe (STT)"
+      handler_pattern:
+        base: "ApiHandler in python/helpers/api.py"
+        decorators: "requires_auth(), requires_csrf(), requires_api_key()"
+        method: "async process(input, request)"
+
+  σ₂₀.₂_mcp_integration:
+    description: "Server mode, client mode, tool discovery"
+    content:
+      dual_role: "Agent Zero acts as BOTH MCP server AND client"
+      server_mode:
+        endpoints: ["/mcp/sse", "/mcp/http"]
+        implementation: "python/helpers/mcp_server.py"
+        purpose: "Expose Agent Zero capabilities to other MCP clients"
+      client_mode:
+        implementation: "python/helpers/mcp_handler.py"
+        transports:
+          stdio: "MCPClientLocal — local process communication"
+          sse: "sse_client — Server-Sent Events"
+          streamable_http: "streamablehttp_client — HTTP streaming"
+        tool_discovery: "ListToolsResult from connected servers"
+        tool_class: "MCPTool extends Tool"
+        config: "MCPConfig (Pydantic singleton)"
+      protocol_support:
+        - "mcp.ClientSession"
+        - "StdioServerParameters"
+        - "CallToolResult, ListToolsResult"
+
+  σ₂₀.₃_a2a_protocol:
+    description: "Agent-to-agent communication"
+    content:
+      implementation:
+        client: "python/helpers/fasta2a_client.py"
+        server: "python/helpers/fasta2a_server.py"
+      tool: "python/tools/a2a_chat.py"
+      purpose: "Cross-instance agent communication"
+      prompt: "agent.system.tool.a2a_chat.md"
+
+  σ₂₀.₄_browser_automation:
+    description: "browser_use integration, Playwright"
+    content:
+      library: "browser_use (third-party)"
+      engine: "Playwright Chromium"
+      helper_files:
+        - "python/helpers/browser.py"
+        - "python/helpers/browser_use_monkeypatch.py"
+        - "python/helpers/playwright.py"
+      tool: "python/tools/browser_agent.py (~17KB)"
+      model: "Dedicated browser_model in AgentConfig"
+      features:
+        - "Web page navigation"
+        - "Screenshot capture"
+        - "DOM manipulation"
+        - "Form filling"
+        - "Custom HTTP headers"
+      config: "BrowserProfile, browser_http_headers in AgentConfig"
+
+  σ₂₀.₅_model_integration:
+    description: "LiteLLM abstraction, provider config"
+    content:
+      abstraction: "LiteLLM — universal LLM provider compatibility layer"
+      wrapper_classes:
+        chat: "LiteLLMChatWrapper extends SimpleChatModel (LangChain)"
+        embedding: "LiteLLMEmbeddingWrapper extends Embeddings (LangChain)"
+        local_embedding: "LocalSentenceTransformerWrapper extends Embeddings"
+        browser: "BrowserCompatibleChatWrapper extends ChatOpenRouter"
+      model_types:
+        chat: "Primary conversational model"
+        utility: "Utility/helper model for background tasks"
+        embedding: "Vector embedding model"
+        browser: "Browser automation model"
+      config_file: "conf/model_providers.yaml (25+ providers)"
+      rate_limiting: "python/helpers/rate_limiter.py"
+      cost_tracking: "Built into models.py"
+      streaming: "Full streaming support with ChatGenerationResult"
+
+  σ₂₀.₆_websocket:
+    description: "Real-time communication layer"
+    content:
+      library: "python-socketio"
+      handlers_directory: "python/websocket_handlers/"
+      handlers:
+        - "_default.py: Default message handler"
+        - "hello_handler.py: Connection handshake"
+        - "state_sync_handler.py: State synchronization"
+        - "dev_websocket_test_handler.py: Development testing"
+      discovery: "python/helpers/websocket_namespace_discovery.py"
+      manager: "python/helpers/websocket_manager.py"
+      usage: "Real-time streaming of agent responses to web UI"
+
+  σ₂₀.₇_other_integrations:
+    description: "Email, search, tunnel, voice"
+    content:
+      email: "python/helpers/email_client.py"
+      search: "DuckDuckGo (duckduckgo-search), Perplexity (perplexity-search)"
+      tunnel: "run_tunnel.py + python/helpers/tunnel_manager.py"
+      voice:
+        tts: "Kokoro text-to-speech"
+        stt: "OpenAI Whisper speech-to-text"
+      cloud: "boto3 (AWS S3) for storage"
+
+cross_references:
+  - target: "δ₈ INTERFACIAL"
+    relationship: "api_layer"
+    strength: 0.95
+  - target: "δ₁₅ AGENTIC-TOOL"
+    relationship: "mcp_tools"
+    strength: 0.85
+  - target: "δ₁₆ AGENTIC-COMMUNICATION"
+    relationship: "a2a_protocol"
+    strength: 0.92

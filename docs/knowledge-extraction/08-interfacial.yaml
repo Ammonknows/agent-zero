@@ -1,0 +1,133 @@
+##############################################################################
+#  δ₈ INTERFACIAL DIMENSION — APIs & Protocols
+##############################################################################
+
+dimension:
+  id: "δ₈"
+  name: "INTERFACIAL"
+  priority: P1
+  completeness: 1.0
+  confidence: 0.88
+
+sub_dimensions:
+
+  σ₈.₁_rest_api_surface:
+    description: "Complete REST API endpoint catalog"
+    content:
+      total_endpoints: 73
+      server: "Flask + Starlette via uvicorn"
+      base_url: "http://localhost:9000"
+      authentication:
+        - "X-API-Key header for API access"
+        - "CSRF tokens for web UI"
+        - "Session cookies"
+      endpoint_groups:
+        chat_management:
+          - "POST /api/chat/create"
+          - "GET /api/chat/load"
+          - "POST /api/chat/reset"
+          - "DELETE /api/chat/remove"
+          - "GET /api/chat/export"
+        messaging:
+          - "POST /api/message"
+          - "POST /api/message/async"
+          - "GET /api/message/queue/send"
+          - "DELETE /api/message/queue/remove"
+        agents:
+          - "GET /api/agents"
+          - "POST /api/subagents"
+        settings:
+          - "GET /api/settings"
+          - "POST /api/settings/set"
+        knowledge:
+          - "POST /api/knowledge/reindex"
+          - "GET /api/knowledge/path"
+          - "POST /api/import/knowledge"
+        scheduling:
+          - "POST /api/scheduler/task/create"
+          - "DELETE /api/scheduler/task/delete"
+          - "POST /api/scheduler/task/run"
+          - "POST /api/scheduler/task/update"
+          - "GET /api/scheduler/tasks/list"
+          - "POST /api/scheduler/tick"
+        files:
+          - "GET /api/files"
+          - "POST /api/upload"
+          - "GET /api/download"
+          - "POST /api/edit"
+          - "DELETE /api/delete"
+        mcp:
+          - "GET /api/mcp/servers/status"
+          - "POST /api/mcp/servers/apply"
+        system:
+          - "GET /api/health"
+          - "POST /api/restart"
+          - "POST /api/pause"
+          - "POST /api/nudge"
+        backup:
+          - "POST /api/backup/create"
+          - "POST /api/backup/restore"
+
+  σ₈.₂_websocket_interface:
+    description: "Real-time WebSocket protocol"
+    content:
+      library: "python-socketio"
+      transport: "WebSocket with polling fallback"
+      handlers:
+        default: "General message routing"
+        hello: "Connection handshake"
+        state_sync: "State synchronization"
+      events:
+        - "Agent response streaming"
+        - "Log updates"
+        - "Progress notifications"
+        - "State change events"
+
+  σ₈.₃_mcp_protocol_interface:
+    description: "MCP server and client interfaces"
+    content:
+      server_endpoints:
+        - "/mcp/sse: Server-Sent Events transport"
+        - "/mcp/http: Streamable HTTP transport"
+      client_protocols:
+        - "stdio: Local process communication"
+        - "SSE: Remote server events"
+        - "streamable HTTP: Remote HTTP streaming"
+      tool_interface:
+        discovery: "ListToolsResult"
+        execution: "CallToolResult"
+
+  σ₈.₄_tool_interface:
+    description: "Internal tool API"
+    content:
+      base_class: "Tool in python/helpers/tool.py"
+      interface:
+        constructor: "Tool(agent, name, method, args, message, loop_data)"
+        execute: "async execute(**kwargs) -> Response"
+        before_execution: "async before_execution(**kwargs)"
+        after_execution: "async after_execution(response, **kwargs)"
+      response_model:
+        message: "str — tool output"
+        break_loop: "bool — signal to end message loop"
+        additional: "dict | None — extra metadata"
+
+  σ₈.₅_extension_interface:
+    description: "Extension hook API"
+    content:
+      base_class: "Extension in python/helpers/extension.py"
+      interface:
+        constructor: "Extension(agent, **kwargs)"
+        execute: "async execute(**kwargs) -> Any"
+      invocation: "call_extensions(extension_point, agent, **kwargs)"
+      kwargs_per_point:
+        system_prompt: "system_prompt, loop_data, agent"
+        tool_execute_before: "tool, loop_data, agent"
+        message_loop_prompts_after: "loop_data, agent"
+
+cross_references:
+  - target: "δ₂₀ AGENTIC-CONNECTIVITY"
+    relationship: "connectivity_details"
+    strength: 0.95
+  - target: "δ₂ FUNCTIONAL"
+    relationship: "api_exposes_functions"
+    strength: 0.85

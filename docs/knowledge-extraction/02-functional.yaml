@@ -1,0 +1,92 @@
+##############################################################################
+#  δ₂ FUNCTIONAL DIMENSION — Behavioral Capabilities
+##############################################################################
+
+dimension:
+  id: "δ₂"
+  name: "FUNCTIONAL"
+  priority: P1
+  completeness: 1.0
+  confidence: 0.90
+
+sub_dimensions:
+
+  σ₂.₁_core_capabilities:
+    description: "Primary functional capabilities"
+    content:
+      natural_language_reasoning: "Multi-turn conversation with LLM-powered reasoning"
+      code_execution: "Python, Node.js, Shell via SSH/Docker"
+      web_browsing: "Automated browser via Playwright + browser_use"
+      web_search: "DuckDuckGo, Perplexity search integration"
+      document_processing: "PDF, text, HTML parsing and querying"
+      memory_management: "Save, recall, consolidate, forget memories"
+      knowledge_base: "FAISS-backed vector search over documents"
+      task_scheduling: "Cron, adhoc, planned task execution"
+      file_operations: "Read, write, upload, download files"
+      agent_delegation: "Hierarchical subordinate delegation"
+      behavior_modification: "Self-adjusting behavior at runtime"
+      multi_agent_communication: "A2A protocol for cross-agent chat"
+      notification_system: "User notifications and alerts"
+      skill_execution: "Load and execute specialized skills"
+      voice_interface: "TTS (Kokoro) and STT (Whisper)"
+
+  σ₂.₂_tool_capabilities:
+    description: "What each tool enables"
+    content:
+      code_execution_tool:
+        capabilities: ["Run Python", "Run Node.js", "Run Shell", "Interactive sessions", "File I/O"]
+        environment: "Docker container or SSH host"
+      browser_agent:
+        capabilities: ["Navigate URLs", "Click elements", "Fill forms", "Take screenshots", "Extract text"]
+      knowledge_tool:
+        capabilities: ["Semantic search", "Document import", "Reindexing"]
+      memory_tools:
+        capabilities: ["Save to 4 areas", "Semantic recall", "Delete by ID", "Forget by criteria"]
+      scheduler:
+        capabilities: ["Create cron tasks", "One-time tasks", "Planned sequences", "Enable/disable"]
+      search_engine:
+        capabilities: ["Web search", "Multiple backends"]
+
+  σ₂.₃_web_ui_capabilities:
+    description: "User-facing web interface functions"
+    content:
+      chat_interface: "Multi-context chat with streaming"
+      file_management: "Upload, browse, edit, download files"
+      settings_panel: "Configure models, providers, behavior"
+      project_management: "Create, edit, activate projects"
+      skill_management: "Browse, import, activate skills"
+      scheduler_management: "Create, monitor, manage scheduled tasks"
+      notification_center: "View and manage notifications"
+      knowledge_management: "Import, index, browse knowledge"
+      mcp_management: "Configure and monitor MCP servers"
+      backup_restore: "Full backup and restore functionality"
+      authentication: "Login, API key, session management"
+
+  σ₂.₄_streaming_capabilities:
+    description: "Real-time streaming features"
+    content:
+      response_streaming: "Token-by-token response display"
+      reasoning_streaming: "Thinking/reasoning process visible"
+      progress_tracking: "Tool execution progress updates"
+      live_logs: "Real-time log streaming via WebSocket"
+      secret_filtering: "StreamingSecretsFilter for live masking"
+
+  σ₂.₅_backup_and_persistence:
+    description: "Data persistence and recovery"
+    content:
+      chat_persistence: "python/helpers/persist_chat.py — save/load conversations"
+      backup_service: "python/helpers/backup.py — full backup/restore"
+      memory_persistence: "FAISS index persistence to disk"
+      scheduler_persistence: "usr/scheduler/ JSON storage"
+      settings_persistence: "JSON settings files"
+
+cross_references:
+  - target: "δ₁₅ AGENTIC-TOOL"
+    relationship: "tools_enable_capabilities"
+    strength: 0.92
+  - target: "δ₉ OPERATIONAL"
+    relationship: "runtime_behavior"
+    strength: 0.92
+  - target: "δ₈ INTERFACIAL"
+    relationship: "api_exposes_capabilities"
+    strength: 0.85

@@ -1,0 +1,94 @@
+##############################################################################
+#  δ₁₉ AGENTIC-SCHEDULER DIMENSION — Task Scheduling
+##############################################################################
+
+dimension:
+  id: "δ₁₉"
+  name: "AGENTIC-SCHEDULER"
+  priority: P1
+  completeness: 1.0
+  confidence: 0.85
+
+sub_dimensions:
+
+  σ₁₉.₁_scheduler_architecture:
+    description: "task_scheduler.py, storage, tick interval"
+    content:
+      module: "python/helpers/task_scheduler.py"
+      storage: "usr/scheduler/ (SCHEDULER_FOLDER)"
+      models:
+        TaskState: "Enum: IDLE, RUNNING, DISABLED, ERROR"
+        TaskType: "Enum: AD_HOC, SCHEDULED, PLANNED"
+        TaskSchedule: "Pydantic model: minute, hour, day, month, weekday, timezone → cron"
+        TaskPlan: "Pydantic model: todo list[datetime], in_progress, done list[datetime]"
+      dependencies:
+        - "CronTab (crontab library) for schedule parsing"
+        - "pytz for timezone handling"
+        - "Pydantic for model validation"
+      tick_mechanism: "API endpoint /api/scheduler/tick triggers evaluation"
+
+  σ₁₉.₂_task_types:
+    description: "Scheduled, adhoc, planned task types"
+    content:
+      SCHEDULED:
+        type: "TaskType.SCHEDULED"
+        description: "Cron-based recurring tasks"
+        schedule_model: "TaskSchedule (cron fields + timezone)"
+        cron_format: "minute hour day month weekday"
+      AD_HOC:
+        type: "TaskType.AD_HOC"
+        description: "Token-based on-demand tasks"
+        trigger: "Manual or programmatic invocation"
+      PLANNED:
+        type: "TaskType.PLANNED"
+        description: "Specific execution time tasks"
+        plan_model: "TaskPlan with todo/in_progress/done datetime lists"
+        timezone_handling: "Auto-localize naive datetimes to UTC"
+
+  σ₁₉.₃_task_states:
+    description: "Task state machine"
+    content:
+      states:
+        IDLE: "Task is waiting for next execution window"
+        RUNNING: "Task is currently executing"
+        DISABLED: "Task has been manually disabled"
+        ERROR: "Task encountered an error during last execution"
+      transitions:
+        - "IDLE → RUNNING: Scheduler tick triggers execution"
+        - "RUNNING → IDLE: Task completes successfully"
+        - "RUNNING → ERROR: Task fails"
+        - "IDLE ↔ DISABLED: Manual toggle"
+        - "ERROR → IDLE: Reset or retry"
+
+  σ₁₉.₄_execution_flow:
+    description: "Task execution pipeline"
+    content:
+      api_endpoints:
+        create: "POST /api/scheduler/task/create"
+        delete: "DELETE /api/scheduler/task/delete"
+        run: "POST /api/scheduler/task/run"
+        update: "POST /api/scheduler/task/update"
+        list: "GET /api/scheduler/tasks/list"
+        tick: "POST /api/scheduler/tick"
+      execution_pipeline:
+        1: "Scheduler tick evaluates all tasks"
+        2: "For each IDLE task, check if execution time reached"
+        3: "Create AgentContext for task execution"
+        4: "Initialize agent with task configuration"
+        5: "Send task message to agent"
+        6: "Agent processes task via normal monologue loop"
+        7: "Update task state based on result"
+      integration:
+        tool: "python/tools/scheduler.py (~12KB)"
+        agent_interaction: "Agent can create/manage scheduled tasks via scheduler tool"
+
+cross_references:
+  - target: "δ₁₃ AGENTIC-COGNITIVE"
+    relationship: "tasks_use_agent_loop"
+    strength: 0.75
+  - target: "δ₉ OPERATIONAL"
+    relationship: "runtime_scheduling"
+    strength: 0.72
+  - target: "δ₂₀ AGENTIC-CONNECTIVITY"
+    relationship: "api_endpoints"
+    strength: 0.62

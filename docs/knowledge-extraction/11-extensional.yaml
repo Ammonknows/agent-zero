@@ -1,0 +1,162 @@
+##############################################################################
+#  δ₁₁ EXTENSIONAL DIMENSION — Extension Mechanisms
+##############################################################################
+
+dimension:
+  id: "δ₁₁"
+  name: "EXTENSIONAL"
+  priority: P1
+  completeness: 1.0
+  confidence: 0.91
+
+sub_dimensions:
+
+  σ₁₁.₁_extension_architecture:
+    description: "Extension base class and loading mechanism"
+    content:
+      base_class:
+        file: "python/helpers/extension.py"
+        name: "Extension (ABC)"
+        constructor: "__init__(self, agent, **kwargs)"
+        abstract_method: "async execute(self, **kwargs) -> Any"
+      loading:
+        function: "call_extensions(extension_point, agent, **kwargs)"
+        discovery: "Loads all Extension subclasses from folder via extract_tools.load_classes_from_folder()"
+        caching: "Module-level _cache dict keyed by folder path"
+      directories:
+        default: "python/extensions/ (DEFAULT_EXTENSIONS_FOLDER)"
+        user: "usr/extensions/ (USER_EXTENSIONS_FOLDER)"
+      override_mechanism: |
+        Extensions from all paths are merged. First occurrence of a filename wins,
+        so user extensions override defaults. Sorted by filename for execution order.
+
+  σ₁₁.₂_extension_points:
+    description: "26 extension point directories with registered extensions"
+    content:
+      agent_lifecycle:
+        agent_init:
+          - "_10_initial_message.py: Display initial greeting"
+          - "_15_load_profile_settings.py: Load agent profile settings"
+        banners:
+          - "_10_unsecured_connection.py: Warn if HTTP"
+          - "_20_missing_api_key.py: Warn if no API key"
+          - "_30_system_resources.py: Display system stats"
+      message_loop:
+        message_loop_start:
+          - "_10_iteration_no.py: Increment and track iteration"
+        message_loop_prompts_before:
+          - "_90_organize_history_wait.py: Wait for history compression"
+        message_loop_prompts_after:
+          - "_50_recall_memories.py: Async memory recall"
+          - "_60_include_current_datetime.py: Inject timestamp"
+          - "_65_include_loaded_skills.py: Inject active skills"
+          - "_70_include_agent_info.py: Inject agent metadata"
+          - "_75_include_project_extras.py: Inject project context"
+          - "_91_recall_wait.py: Wait for memory recall"
+        message_loop_end:
+          - "_10_organize_history.py: Compress/organize history"
+          - "_90_save_chat.py: Persist chat to disk"
+      llm_interaction:
+        before_main_llm_call:
+          - "_10_log_for_stream.py: Initialize stream logging"
+        util_model_call_before:
+          - "_10_mask_secrets.py: Mask secrets before utility calls"
+      streaming:
+        reasoning_stream:
+          - "_10_log_from_stream.py: Log reasoning stream"
+        reasoning_stream_chunk:
+          - "_10_mask_stream.py: Mask secrets in reasoning chunks"
+        reasoning_stream_end:
+          - "_10_mask_end.py: Finalize reasoning mask filter"
+        response_stream:
+          - "_10_log_from_stream.py: Log response stream"
+          - "_15_replace_include_alias.py: Handle @file.md includes"
+          - "_20_live_response.py: Stream to UI"
+        response_stream_chunk:
+          - "_10_mask_stream.py: Mask secrets in response chunks"
+        response_stream_end:
+          - "_10_mask_end.py: Finalize response mask filter"
+          - "_15_log_from_stream_end.py: Finalize stream log"
+      tool_lifecycle:
+        tool_execute_before:
+          - "_10_unmask_secrets.py: Replace §§secret() with real values"
+          - "_10_replace_last_tool_output.py: Manage tool output state"
+        tool_execute_after:
+          - "_10_mask_secrets.py: Re-mask secrets in tool output"
+      history:
+        hist_add_before:
+          - "_10_mask_content.py: Mask secrets in history entries"
+        hist_add_tool_result:
+          - "_90_save_tool_call_file.py: Save tool calls to file"
+      system_prompt:
+        system_prompt:
+          - "_10_system_prompt.py: Build main system prompt"
+          - "_20_behaviour_prompt.py: Inject behaviour customization"
+      monologue_lifecycle:
+        monologue_start:
+          - "_10_memory_init.py: Initialize memory system"
+          - "_60_rename_chat.py: Auto-rename chat based on content"
+        monologue_end:
+          - "_50_memorize_fragments.py: Extract and save learnings"
+          - "_51_memorize_solutions.py: Extract and save solutions"
+          - "_90_waiting_for_input_msg.py: Show waiting state"
+      error_handling:
+        error_format:
+          - "_10_mask_errors.py: Mask secrets in error messages"
+      ui:
+        user_message_ui:
+          - "_10_update_check.py: Check for framework updates"
+      process:
+        process_chain_end:
+          - "_50_process_queue.py: Process message queue"
+
+  σ₁₁.₃_naming_convention:
+    description: "Priority-based naming scheme"
+    content:
+      pattern: "_NN_descriptive_name.py"
+      execution_order: "Sorted lexicographically by filename → lower numbers run first"
+      examples:
+        _10_: "High priority, runs first"
+        _50_: "Medium priority"
+        _90_: "Low priority, runs last"
+      override: "User extensions in usr/extensions/ override same-named defaults"
+
+  σ₁₁.₄_agent_profile_extensions:
+    description: "Per-agent-profile extension overrides"
+    content:
+      mechanism: "Extensions also loaded from agent profile directories"
+      path_resolution: "subagents.get_paths(agent, 'extensions', point, default_root='python')"
+      profile_directory: "agents/{profile_name}/extensions/"
+      merge_order: "Default → Profile → User (first filename wins)"
+
+  σ₁₁.₅_skills_as_extensions:
+    description: "Skills system as extended extension mechanism"
+    content:
+      skills_directory: "skills/ (built-in) and usr/skills/ (user-installed)"
+      skill_structure:
+        dataclass: "Skill (name, description, path, triggers, allowed_tools, content, metadata)"
+        frontmatter: "YAML frontmatter in .md files"
+        activation: "Loaded via skills_tool, injected via _65_include_loaded_skills.py"
+      built_in_skills:
+        - "api-development"
+        - "brainstorming"
+        - "code-review"
+        - "create-skill"
+        - "database-design"
+        - "debugging"
+        - "docker-devops"
+        - "git-workflow"
+        - "prompt-engineering"
+        - "security-audit"
+        - "tdd"
+
+cross_references:
+  - target: "δ₁₃ AGENTIC-COGNITIVE"
+    relationship: "extensions_hook_into_loop"
+    strength: 0.75
+  - target: "δ₃ ARCHITECTURAL"
+    relationship: "plugin_architecture_pattern"
+    strength: 0.92
+  - target: "δ₁₅ AGENTIC-TOOL"
+    relationship: "tool_lifecycle_extensions"
+    strength: 0.92

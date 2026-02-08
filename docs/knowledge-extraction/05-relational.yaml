@@ -1,0 +1,134 @@
+##############################################################################
+#  δ₅ RELATIONAL DIMENSION — Dependencies & Information Flows
+##############################################################################
+
+dimension:
+  id: "δ₅"
+  name: "RELATIONAL"
+  priority: P1
+  completeness: 1.0
+  confidence: 0.88
+
+sub_dimensions:
+
+  σ₅.₁_import_dependencies:
+    description: "Python import graph — key dependencies"
+    content:
+      agent_py_imports:
+        internal:
+          - "models (ModelConfig, ChatGenerationResult)"
+          - "python.helpers.extract_tools"
+          - "python.helpers.files"
+          - "python.helpers.errors (RepairableException)"
+          - "python.helpers.history"
+          - "python.helpers.tokens"
+          - "python.helpers.context"
+          - "python.helpers.dirty_json (DirtyJson)"
+          - "python.helpers.defer (DeferredTask)"
+          - "python.helpers.extension (call_extensions)"
+          - "python.helpers.localization"
+          - "python.helpers.subagents"
+          - "python.helpers.log"
+          - "python.helpers.print_style"
+        external:
+          - "langchain_core.prompts (ChatPromptTemplate)"
+          - "langchain_core.messages (SystemMessage, BaseMessage)"
+          - "asyncio, nest_asyncio"
+          - "collections (OrderedDict)"
+          - "dataclasses, datetime, enum, typing"
+      models_py_imports:
+        external:
+          - "litellm"
+          - "langchain_core (SimpleChatModel, Embeddings)"
+          - "openai (AsyncOpenAI)"
+          - "sentence_transformers"
+      memory_imports:
+        external:
+          - "langchain_community.vectorstores (FAISS)"
+          - "langchain.storage (InMemoryByteStore, LocalFileStore)"
+          - "langchain.embeddings (CacheBackedEmbeddings)"
+          - "faiss"
+          - "numpy"
+          - "simpleeval"
+
+  σ₅.₂_external_dependencies:
+    description: "Third-party library dependencies"
+    content:
+      llm_stack:
+        - "litellm: Universal LLM provider abstraction"
+        - "openai: OpenAI client"
+        - "langchain-core: LangChain core abstractions"
+        - "langchain-community: Community integrations"
+      vector_search:
+        - "faiss-cpu: Facebook AI Similarity Search"
+        - "sentence-transformers: Local embedding models"
+      web_framework:
+        - "flask: Web application framework"
+        - "uvicorn: ASGI server"
+        - "python-socketio: WebSocket support"
+        - "starlette: ASGI toolkit"
+      browser:
+        - "playwright: Browser automation"
+        - "browser-use: High-level browser agent"
+      document_processing:
+        - "pypdf, pdf2image: PDF handling"
+        - "unstructured: Document parsing"
+        - "newspaper3k: Article extraction"
+        - "beautifulsoup4: HTML parsing"
+      search:
+        - "duckduckgo-search"
+        - "perplexity-search"
+      utilities:
+        - "pydantic: Data validation"
+        - "crontab: Cron expression parsing"
+        - "pytz: Timezone handling"
+        - "httpx: HTTP client"
+        - "docker: Docker API"
+        - "GitPython: Git operations"
+        - "boto3: AWS S3"
+
+  σ₅.₃_information_flows:
+    description: "Data flow patterns through the system"
+    content:
+      user_to_response:
+        flow: "User message → API → AgentContext._process_chain() → Agent.monologue() → LLM → Tools → Response"
+        direction: "bidirectional (user can intervene)"
+      memory_cycle:
+        flow: "Conversation → monologue_end extensions → memory save → FAISS index → recall in next loop → prompt injection"
+        direction: "circular"
+      secret_flow:
+        flow: "§§secret(KEY) in prompt → unmask at tool_execute_before → real value in tool → re-mask at tool_execute_after → §§secret(KEY) in output"
+        direction: "unmask → use → re-mask"
+      streaming_flow:
+        flow: "LLM tokens → ChatGenerationResult → stream callbacks → extension chunks → WebSocket → UI"
+        direction: "unidirectional push"
+      project_injection:
+        flow: "Project config → _75_include_project_extras.py → extras_persistent → prompt"
+        direction: "unidirectional"
+
+  σ₅.₄_component_coupling:
+    description: "Inter-component coupling analysis"
+    content:
+      high_coupling:
+        - "Agent ↔ AgentContext: Mutual references, tightly bound"
+        - "Agent ↔ History: Agent owns and manages History"
+        - "Agent ↔ LoopData: Created and managed by Agent"
+      medium_coupling:
+        - "Agent → Extensions: Via call_extensions dispatch"
+        - "Agent → Tools: Via abstract Tool interface"
+        - "Memory → FAISS/Embeddings: Implementation dependency"
+      low_coupling:
+        - "API handlers → AgentContext: Stateless interaction"
+        - "Extensions ↔ Extensions: Independent, priority-ordered"
+        - "Skills → Tool system: Loaded on demand"
+
+cross_references:
+  - target: "δ₁ STRUCTURAL"
+    relationship: "structure_enables_flow"
+    strength: 0.80
+  - target: "δ₃ ARCHITECTURAL"
+    relationship: "architecture_defines_coupling"
+    strength: 0.82
+  - target: "δ₁₂ EMERGENT"
+    relationship: "flows_create_emergence"
+    strength: 0.92

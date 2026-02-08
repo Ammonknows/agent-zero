@@ -1,0 +1,88 @@
+##############################################################################
+#  δ₁₀ PHILOSOPHICAL DIMENSION — Design Principles & Identity
+##############################################################################
+
+dimension:
+  id: "δ₁₀"
+  name: "PHILOSOPHICAL"
+  priority: P2
+  completeness: 1.0
+  confidence: 0.87
+
+sub_dimensions:
+
+  σ₁₀.₁_identity:
+    description: "Framework identity and purpose"
+    content:
+      name: "Agent Zero"
+      tagline: "Personal and organic AI framework"
+      philosophy: |
+        Agent Zero is designed to be a general-purpose AI agent framework
+        that is transparent, extensible, and capable of self-improvement.
+        The framework emphasizes autonomy with human oversight, learning
+        from experience, and hierarchical task delegation.
+      key_principles:
+        - "Transparency: Agent thinks aloud, all reasoning visible"
+        - "Extensibility: Plugin system for every aspect of behavior"
+        - "Self-improvement: Learns from mistakes, adjusts behavior"
+        - "Hierarchical agency: Delegates complex tasks to subordinates"
+        - "Tool-augmented reasoning: Rich tool ecosystem"
+        - "Memory-enhanced: Both short-term and long-term memory"
+
+  σ₁₀.₂_design_philosophy:
+    description: "Core architectural decisions and their rationale"
+    content:
+      decisions:
+        dual_loop:
+          what: "Outer monologue + inner message loop"
+          why: "Allows agent to think in cycles, recovering from errors gracefully"
+        repairable_exceptions:
+          what: "Forward tool errors to LLM instead of crashing"
+          why: "Enables self-healing — agent can see and fix its own mistakes"
+        extension_system:
+          what: "26 hook points with priority-ordered extensions"
+          why: "Maximum customizability without modifying core code"
+        secret_placeholders:
+          what: "Agent works with §§secret(KEY) never seeing real values"
+          why: "Prevents accidental secret leakage through LLM outputs"
+        progressive_compression:
+          what: "Messages → Topics → Bulk history compression"
+          why: "Enables near-infinite conversations within finite context windows"
+        profile_system:
+          what: "Agent profiles with specialized configurations"
+          why: "Same framework can power different agent personas"
+
+  σ₁₀.₃_agentic_principles:
+    description: "Core agentic behavior principles"
+    content:
+      autonomy: |
+        The agent operates autonomously within its loop, making decisions
+        about tool usage and task decomposition. Human intervention is
+        possible but not required for normal operation.
+      hierarchy: |
+        Tasks can be decomposed via subordinate agents. Each subordinate
+        shares context but operates independently within its scope.
+      learning: |
+        The agent extracts fragments and solutions from conversations,
+        consolidates memories, and adjusts its behavior dynamically.
+      communication: |
+        The agent uses structured JSON tool calls for actions, natural
+        language for reasoning, and can communicate with other agents
+        via A2A protocol.
+
+  σ₁₀.₄_naming_philosophy:
+    description: "Naming conventions and their meaning"
+    content:
+      agent_naming: "A0, A1, A2... — hierarchy depth"
+      extension_naming: "_NN_description.py — priority ordering"
+      prompt_naming: "dot.separated.namespace.md — hierarchical categorization"
+      memory_areas: "MAIN, FRAGMENTS, SOLUTIONS, INSTRUMENTS — semantic purpose"
+      context_types: "USER, TASK, BACKGROUND — usage intent"
+
+cross_references:
+  - target: "δ₃ ARCHITECTURAL"
+    relationship: "principles_inform_architecture"
+    strength: 0.85
+  - target: "δ₁₃ AGENTIC-COGNITIVE"
+    relationship: "principles_drive_loop_design"
+    strength: 0.72

@@ -1,0 +1,288 @@
+##############################################################################
+#  δ₁ STRUCTURAL DIMENSION — Physical Codebase Organization
+##############################################################################
+
+dimension:
+  id: "δ₁"
+  name: "STRUCTURAL"
+  priority: P0
+  completeness: 1.0
+  confidence: 0.96
+
+sub_dimensions:
+
+  σ₁.₁_repository_topology:
+    description: "Root structure, primary directories, organization scheme"
+    content:
+      root_path: "/home/user/agent-zero"
+      is_git_repo: true
+      top_level_layout:
+        entry_points:
+          - "agent.py         # Core Agent framework (1007 lines)"
+          - "models.py        # LLM model handling (919 lines)"
+          - "initialize.py    # Agent initialization (177 lines)"
+          - "run_ui.py        # Web UI/Flask+Starlette server (19,547 lines)"
+          - "preload.py       # Preload utilities"
+          - "prepare.py       # Preparation utilities"
+        infrastructure:
+          - "DockerfileLocal   # Local Docker image build"
+          - "requirements.txt  # Python dependencies"
+          - "requirements.dev.txt"
+          - "requirements2.txt"
+        directories:
+          python:       "Core Python codebase (221 .py files)"
+          agents:       "Agent profiles/templates (6 profiles)"
+          prompts:      "System and tool prompts (120+ markdown files)"
+          skills:       "Built-in skills (11 directories)"
+          knowledge:    "Knowledge base (main/, solutions/)"
+          docker:       "Docker configuration (base/, run/)"
+          webui:        "Frontend web interface"
+          conf:         "Configuration files"
+          lib:          "Libraries (browser automation)"
+          tests:        "Test suite"
+          usr:          "User data and customizations"
+          logs:         "Log directory"
+          tmp:          "Temporary files"
+          docs:         "Documentation"
+
+  σ₁.₂_module_architecture:
+    description: "Package/module decomposition, namespace hierarchy"
+    content:
+      core_modules:
+        "python/":
+          __init__: "Package root"
+          api:      "REST API endpoints (73 handler files)"
+          extensions: "Extension system (26 extension point directories)"
+          helpers:  "Helper utilities (70+ modules)"
+          tools:    "Tool implementations (23 tool files)"
+          websocket_handlers: "WebSocket handlers (4 files)"
+      key_module_breakdown:
+        "python/api/":
+          count: 73
+          categories:
+            message_management: ["api_message.py", "message.py", "message_async.py"]
+            chat_operations: ["chat_create.py", "chat_load.py", "chat_reset.py", "chat_remove.py", "chat_export.py"]
+            agent_management: ["agents.py", "subagents.py"]
+            knowledge: ["knowledge_reindex.py", "import_knowledge.py"]
+            skills: ["skills.py", "skills_import.py"]
+            scheduling: ["scheduler_task_create.py", "scheduler_tasks_list.py", "scheduler_tick.py"]
+            notifications: ["notification_create.py", "notifications_history.py"]
+            file_ops: ["get_work_dir_files.py", "download_work_dir_file.py"]
+            settings: ["settings_get.py", "settings_set.py"]
+            mcp: ["mcp_servers_status.py", "mcp_server_detail.py"]
+        "python/helpers/":
+          count: 70+
+          categories:
+            llm_and_models: ["call_llm.py", "providers.py", "rate_limiter.py", "tokens.py"]
+            history_memory: ["history.py", "memory.py", "memory_consolidation.py"]
+            files_storage: ["files.py", "file_browser.py", "file_tree.py", "backup.py", "persist_chat.py"]
+            tools_skills: ["skills.py", "tool.py", "extract_tools.py"]
+            web_comms: ["websocket.py", "websocket_manager.py", "api.py", "fasta2a_client.py", "fasta2a_server.py"]
+            browser: ["browser.py", "browser_use_monkeypatch.py", "playwright.py"]
+            knowledge_mgmt: ["knowledge_import.py", "document_query.py", "vector_db.py"]
+            infrastructure: ["docker.py", "shell_local.py", "shell_ssh.py", "runtime.py", "process.py"]
+            ai_features: ["dirty_json.py", "extension.py", "defer.py", "errors.py", "context.py"]
+            integrations: ["email_client.py", "mcp_handler.py", "mcp_server.py", "notification.py"]
+            utilities: ["localization.py", "security.py", "login.py", "secrets.py", "task_scheduler.py"]
+
+  σ₁.₃_file_taxonomy:
+    description: "File types, naming conventions, distribution"
+    content:
+      python_files: 221
+      naming_conventions:
+        api_handlers: "snake_case, verb_noun pattern (e.g., chat_create.py, settings_get.py)"
+        extensions: "Numbered prefix _NN_ for priority ordering (e.g., _10_system_prompt.py, _50_recall_memories.py)"
+        tools: "snake_case descriptive (e.g., code_execution_tool.py, browser_agent.py)"
+        prompts: "Dot-separated namespace (e.g., agent.system.main.md, fw.code.running.md)"
+        helpers: "snake_case module name (e.g., memory_consolidation.py, task_scheduler.py)"
+      file_size_distribution:
+        large_files:
+          - "run_ui.py: 19,547 lines (web server)"
+          - "memory_consolidation.py: ~34KB"
+          - "document_query.py: ~25KB"
+          - "memory.py: ~22KB"
+          - "code_execution_tool.py: ~20KB"
+          - "browser_agent.py: ~17KB"
+          - "settings.py: large (Settings TypedDict + defaults)"
+
+  σ₁.₄_class_hierarchy:
+    description: "Class inheritance, entity relationships"
+    content:
+      core_classes:
+        Agent:
+          file: "agent.py:356"
+          inherits: null
+          key_methods: ["monologue()", "prepare_prompt()", "process_tools()", "call_chat_model()"]
+          constants: ["DATA_NAME_SUPERIOR", "DATA_NAME_SUBORDINATE", "DATA_NAME_CTX_WINDOW"]
+        AgentContext:
+          file: "agent.py:45"
+          inherits: null
+          pattern: "Static registry with _contexts dict"
+          key_methods: ["get()", "current()", "communicate()", "_process_chain()"]
+        AgentConfig:
+          file: "agent.py:298"
+          inherits: "@dataclass"
+          fields: ["chat_model", "utility_model", "embeddings_model", "browser_model", "mcp_servers", "profile"]
+        LoopData:
+          file: "agent.py:326"
+          inherits: null
+          fields: ["iteration", "system", "user_message", "history_output", "extras_temporary", "extras_persistent", "last_response", "params_temporary", "params_persistent", "current_tool"]
+      model_classes:
+        ModelConfig:
+          file: "models.py"
+          inherits: "@dataclass"
+          fields: ["type", "provider", "name", "api_base", "ctx_length", "limit_requests", "limit_input", "limit_output", "vision", "kwargs"]
+        ChatGenerationResult:
+          file: "models.py"
+          manages: "streaming response parsing, thinking tag extraction"
+        LiteLLMChatWrapper:
+          file: "models.py"
+          inherits: "SimpleChatModel (LangChain)"
+        LiteLLMEmbeddingWrapper:
+          file: "models.py"
+          inherits: "Embeddings (LangChain)"
+        LocalSentenceTransformerWrapper:
+          file: "models.py"
+          inherits: "Embeddings (LangChain)"
+      helper_classes:
+        History:
+          file: "python/helpers/history.py"
+          inherits: "Record (ABC)"
+          sub_types: ["Message", "Topic", "Bulk"]
+        Memory:
+          file: "python/helpers/memory.py"
+          areas: ["MAIN", "FRAGMENTS", "SOLUTIONS", "INSTRUMENTS"]
+        MyFaiss:
+          file: "python/helpers/memory.py"
+          inherits: "FAISS (LangChain)"
+        Tool:
+          file: "python/helpers/tool.py"
+          inherits: "ABC"
+          key_method: "execute() -> Response"
+        Response:
+          file: "python/helpers/tool.py"
+          inherits: "@dataclass"
+          fields: ["message", "break_loop", "additional"]
+        Extension:
+          file: "python/helpers/extension.py"
+          inherits: "ABC"
+          key_method: "execute(**kwargs)"
+        MCPTool:
+          file: "python/helpers/mcp_handler.py"
+          inherits: "Tool"
+        MCPConfig:
+          file: "python/helpers/mcp_handler.py"
+          inherits: "BaseModel (Pydantic)"
+        TaskState:
+          file: "python/helpers/task_scheduler.py"
+          inherits: "str, Enum"
+          values: ["IDLE", "RUNNING", "DISABLED", "ERROR"]
+        TaskType:
+          file: "python/helpers/task_scheduler.py"
+          inherits: "str, Enum"
+          values: ["AD_HOC", "SCHEDULED", "PLANNED"]
+        StreamingSecretsFilter:
+          file: "python/helpers/secrets.py"
+          description: "Stateful streaming filter that masks secrets on-the-fly"
+
+  σ₁.₅_function_topology:
+    description: "Key function signatures"
+    content:
+      agent_core:
+        - "async Agent.monologue() -> str"
+        - "async Agent.prepare_prompt(loop_data) -> list[BaseMessage]"
+        - "async Agent.process_tools(msg) -> str|None"
+        - "async Agent.call_chat_model(messages, response_callback, reasoning_callback) -> tuple[str,str]"
+        - "async Agent.call_extensions(extension_point, **kwargs)"
+        - "Agent.hist_add_ai_response(message)"
+        - "Agent.hist_add_tool_result(tool_name, tool_result, **kwargs)"
+        - "Agent.read_prompt(file, **kwargs) -> str"
+        - "Agent.parse_prompt(_prompt_file, **kwargs) -> str"
+      context:
+        - "AgentContext.__init__(config, id, name, agent0, ...)"
+        - "AgentContext.get(id) -> AgentContext"
+        - "AgentContext.current() -> AgentContext"
+        - "async AgentContext._process_chain(agent, msg, user)"
+        - "AgentContext.communicate(msg, broadcast_level)"
+      extensions:
+        - "async call_extensions(extension_point, agent, **kwargs)"
+      memory:
+        - "Memory.search(agent, query, count, threshold, filter, area)"
+        - "Memory.save(agent, text, metadata, area)"
+        - "Memory.delete(agent, ids, area)"
+      initialization:
+        - "initialize_agent(settings) -> AgentConfig"
+
+  σ₁.₆_data_structures:
+    description: "Data models, schemas, dataclasses"
+    content:
+      dataclasses:
+        - "AgentConfig: Agent configuration bundle"
+        - "UserMessage: message + attachments + system_message"
+        - "Response: message + break_loop + additional"
+        - "ConsolidationConfig: memory consolidation settings"
+        - "ConsolidationResult: consolidation analysis result"
+        - "Skill: name, description, path, triggers, content, metadata"
+      typed_dicts:
+        - "Settings: Comprehensive TypedDict with all framework settings"
+        - "BasicProjectData: title, description, instructions, color, git_url, memory, file_structure"
+        - "FileStructureInjectionSettings: enabled, max_depth, max_files, max_folders, gitignore"
+        - "RawMessage: raw_content + preview"
+        - "OutputMessage: ai + content"
+      enums:
+        - "AgentContextType: USER, TASK, BACKGROUND"
+        - "ModelType: CHAT, EMBEDDING"
+        - "Memory.Area: MAIN, FRAGMENTS, SOLUTIONS, INSTRUMENTS"
+        - "TaskState: IDLE, RUNNING, DISABLED, ERROR"
+        - "TaskType: AD_HOC, SCHEDULED, PLANNED"
+        - "ConsolidationAction: MERGE, REPLACE, KEEP_SEPARATE, UPDATE, SKIP"
+
+  σ₁.₇_configuration_files:
+    description: "Configuration files and their purposes"
+    content:
+      yaml:
+        - "conf/model_providers.yaml: 25+ LLM provider configurations (Anthropic, OpenAI, Google, Groq, etc.)"
+        - "conf/projects.default.gitignore: Default gitignore for projects"
+        - "conf/skill.default.gitignore: Default gitignore for skills"
+      json:
+        - "agents/*/agent.json: Agent profile definitions (title, description, context)"
+        - "jsconfig.json: JavaScript config"
+      env:
+        - ".env: API keys, model names, SSH settings, MCP config"
+        - "usr/secrets.env: Global secrets store"
+        - ".a0proj/secrets.env: Per-project secrets"
+      docker:
+        - "DockerfileLocal: Local development build"
+        - "docker/base/Dockerfile: Base image"
+        - "docker/run/docker-compose.yml: Runtime compose"
+
+  σ₁.₈_container_structure:
+    description: "Container configuration and runtime model"
+    content:
+      docker_images:
+        base_image:
+          path: "docker/base/"
+          contents: "Ubuntu/Debian, Python 3.11+, SearXNG, SSH server"
+        runtime_image:
+          path: "docker/run/"
+          contents: "Agent Zero app, supervisor process management"
+      ports:
+        - "22: SSH"
+        - "80: HTTP (SearXNG)"
+        - "9000-9009: Agent Zero API"
+      services:
+        - "Agent Zero API (run_ui.py)"
+        - "SearXNG search engine"
+        - "SSH server"
+        - "Tunnel API"
+
+cross_references:
+  - target: "δ₃ ARCHITECTURAL"
+    relationship: "structural_foundation"
+    strength: 0.92
+  - target: "δ₅ RELATIONAL"
+    relationship: "dependency_source"
+    strength: 0.80
+  - target: "δ₁₃ AGENTIC-COGNITIVE"
+    relationship: "implementation_base"
+    strength: 0.85

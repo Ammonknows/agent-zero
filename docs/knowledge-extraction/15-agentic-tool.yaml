@@ -1,0 +1,137 @@
+##############################################################################
+#  δ₁₅ AGENTIC-TOOL DIMENSION — Tool Architecture
+##############################################################################
+
+dimension:
+  id: "δ₁₅"
+  name: "AGENTIC-TOOL"
+  priority: P0
+  completeness: 1.0
+  confidence: 0.93
+
+sub_dimensions:
+
+  σ₁₅.₁_tool_base_architecture:
+    description: "Tool base class, response model, lifecycle"
+    content:
+      base_class:
+        file: "python/helpers/tool.py"
+        name: "Tool (ABC)"
+        constructor_params: ["agent", "name", "method", "args", "message", "loop_data"]
+        abstract_method: "async execute(**kwargs) -> Response"
+        lifecycle_methods:
+          before_execution: "Logging, UI output of tool name and args"
+          execute: "Abstract — actual tool logic"
+          after_execution: "Add result to history, log result"
+      response_model:
+        class: "Response (@dataclass)"
+        fields:
+          message: "str — tool output text"
+          break_loop: "bool — if True, exits message loop (final answer)"
+          additional: "dict | None — extra data for history"
+      tool_discovery:
+        method: "extract_tools.load_classes_from_folder()"
+        local_path: "python/tools/"
+        mcp_tools: "Dynamic from MCP servers via MCPTool class"
+        lookup_order: "MCP first → local fallback"
+
+  σ₁₅.₂_built_in_tools:
+    description: "23 built-in tool implementations"
+    content:
+      execution_tools:
+        code_execution_tool:
+          file: "python/tools/code_execution_tool.py (~20KB)"
+          purpose: "Execute Python/Node.js/Shell code"
+          features: ["Interactive shell sessions", "SSH execution", "Docker support", "Timeout handling"]
+        browser_agent:
+          file: "python/tools/browser_agent.py (~17KB)"
+          purpose: "Web browsing and automation via Playwright"
+          features: ["Screenshot capture", "DOM manipulation", "Form filling"]
+      memory_tools:
+        memory_save: "Save information to memory areas"
+        memory_load: "Recall memories via semantic search"
+        memory_delete: "Delete specific memories"
+        memory_forget: "Forget memories matching criteria"
+      knowledge_tools:
+        knowledge_tool: "Search knowledge base and documents (~11KB)"
+        document_query: "Query specific documents"
+      communication_tools:
+        call_subordinate: "Delegate task to subordinate agent"
+        a2a_chat: "Agent-to-agent communication protocol"
+        notify_user: "Send notifications to user"
+        input: "Request input from user"
+        response: "Deliver final response (sets break_loop=True)"
+      utility_tools:
+        search_engine: "Web search (DuckDuckGo, Perplexity)"
+        skills_tool: "Load and execute skills"
+        scheduler: "Task scheduling (~12KB)"
+        behaviour_adjustment: "Modify agent behavior at runtime"
+        vision_load: "Image/vision processing"
+        wait: "Wait/delay execution"
+
+  σ₁₅.₃_tool_execution_flow:
+    description: "Full execution pipeline"
+    content:
+      pipeline:
+        1: "Agent response parsed for JSON tool request"
+        2: "Tool class located (MCP → local lookup)"
+        3: "Tool instance created with (agent, name, method, args, message, loop_data)"
+        4: "Extension: tool_execute_before runs"
+        5: "  - _10_unmask_secrets.py: Unmask §§secret() placeholders to real values"
+        6: "  - _10_replace_last_tool_output.py: Manage output state"
+        7: "tool.before_execution(): Log tool usage"
+        8: "tool.execute(): Run actual tool logic"
+        9: "tool.after_execution(): Add result to history, log"
+        10: "Extension: tool_execute_after runs"
+        11: "  - _10_mask_secrets.py: Re-mask any secrets in output"
+        12: "If Response.break_loop=True → exit message loop"
+        13: "If Response.break_loop=False → continue with tool result in history"
+      tool_not_found: "fw.tool_not_found.md message added to history"
+
+  σ₁₅.₄_mcp_tools:
+    description: "MCP-based dynamic tool system"
+    content:
+      class: "MCPTool extends Tool in python/helpers/mcp_handler.py"
+      discovery: "Tools discovered from connected MCP servers at initialization"
+      protocol: "Model Context Protocol — stdio, SSE, and streamable HTTP transports"
+      client_types:
+        MCPClientLocal: "Local stdio-based MCP server"
+        remote_sse: "Remote SSE transport"
+        remote_http: "Remote streamable HTTP transport"
+      tool_naming: "Normalized via normalize_name() (lowercase, non-alphanum → underscore)"
+      config: "MCPConfig (Pydantic BaseModel) with singleton pattern"
+
+  σ₁₅.₅_tool_prompt_system:
+    description: "Per-tool prompt documentation"
+    content:
+      location: "prompts/agent.system.tool.*.md"
+      tools_documented:
+        - "agent.system.tool.a2a_chat.md"
+        - "agent.system.tool.behaviour.md"
+        - "agent.system.tool.browser.md"
+        - "agent.system.tool.call_sub.md"
+        - "agent.system.tool.code_exe.md"
+        - "agent.system.tool.document_query.md"
+        - "agent.system.tool.input.md"
+        - "agent.system.tool.memory.md"
+        - "agent.system.tool.notify_user.md"
+        - "agent.system.tool.response.md"
+        - "agent.system.tool.scheduler.md"
+        - "agent.system.tool.search_engine.md"
+        - "agent.system.tool.skills.md"
+        - "agent.system.tool.wait.md"
+      injection: "Loaded via agent.system.tools.md and included in system prompt"
+
+cross_references:
+  - target: "δ₁₃ AGENTIC-COGNITIVE"
+    relationship: "tool_execution_in_loop"
+    strength: 0.95
+  - target: "δ₁₁ EXTENSIONAL"
+    relationship: "tool_extensions"
+    strength: 0.92
+  - target: "δ₂₀ AGENTIC-CONNECTIVITY"
+    relationship: "mcp_tool_source"
+    strength: 0.85
+  - target: "δ₁₈ AGENTIC-SECRETS"
+    relationship: "secret_masking_in_tools"
+    strength: 0.45

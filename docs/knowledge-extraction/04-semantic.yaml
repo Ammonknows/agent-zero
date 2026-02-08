@@ -1,0 +1,76 @@
+##############################################################################
+#  δ₄ SEMANTIC DIMENSION — Domain Model & Concepts
+##############################################################################
+
+dimension:
+  id: "δ₄"
+  name: "SEMANTIC"
+  priority: P1
+  completeness: 1.0
+  confidence: 0.85
+
+sub_dimensions:
+
+  σ₄.₁_core_domain_concepts:
+    description: "Fundamental domain entities"
+    content:
+      Agent: "An autonomous reasoning entity with tools, memory, and LLM access"
+      AgentContext: "Execution context holding state for a conversation thread"
+      Monologue: "A complete reasoning cycle from user input to final response"
+      MessageLoop: "Inner iteration of prompt→LLM→tool→result within monologue"
+      Tool: "A capability the agent can invoke to interact with the world"
+      Extension: "A hook that modifies agent behavior at specific lifecycle points"
+      Memory: "Vector-indexed stored knowledge (long-term)"
+      History: "Conversation messages with progressive compression (short-term)"
+      Skill: "A pre-packaged set of instructions for specific task types"
+      Project: "An isolated workspace with its own knowledge, secrets, and config"
+      LoopData: "State object shared across extensions within a message loop"
+
+  σ₄.₂_memory_concepts:
+    description: "Memory domain vocabulary"
+    content:
+      Knowledge: "Static, authoritative, user-provided information"
+      MemoryFragment: "Dynamic, auto-extracted learning from conversation"
+      Solution: "A proven pattern for solving a specific problem type"
+      Instrument: "Description of a custom tool or capability"
+      Recall: "Semantic search for relevant memories based on context"
+      Consolidation: "Intelligent merging/updating of related memories"
+      Area: "Namespace for memory organization (MAIN, FRAGMENTS, SOLUTIONS, INSTRUMENTS)"
+      Embedding: "Vector representation of text for similarity search"
+
+  σ₄.₃_agent_concepts:
+    description: "Agent system vocabulary"
+    content:
+      Superior: "The agent that delegated a task"
+      Subordinate: "An agent created to handle a delegated subtask"
+      Intervention: "User interruption during agent execution"
+      RepairableException: "An error the agent can potentially fix itself"
+      HandledException: "A fatal error that stops execution"
+      Streaming: "Real-time token-by-token output delivery"
+      Reasoning: "The agent's thinking process (potentially via thinking tags)"
+
+  σ₄.₄_configuration_concepts:
+    description: "Configuration domain vocabulary"
+    content:
+      Profile: "A named configuration set for an agent persona"
+      Provider: "An LLM service (Anthropic, OpenAI, etc.)"
+      ModelConfig: "Settings for a specific model (name, limits, features)"
+      Settings: "Global framework configuration"
+      Secret: "A sensitive value accessed only via §§secret(KEY) placeholder"
+
+  σ₄.₅_connectivity_concepts:
+    description: "Integration domain vocabulary"
+    content:
+      MCP: "Model Context Protocol — standard for tool server communication"
+      A2A: "Agent-to-Agent protocol for inter-agent messaging"
+      MCPTool: "A tool dynamically discovered from an MCP server"
+      WebSocket: "Real-time bidirectional communication channel"
+      DeferredTask: "An async operation running in background"
+
+cross_references:
+  - target: "δ₁₀ PHILOSOPHICAL"
+    relationship: "concepts_reflect_philosophy"
+    strength: 0.75
+  - target: "δ₃ ARCHITECTURAL"
+    relationship: "concepts_map_to_components"
+    strength: 0.62

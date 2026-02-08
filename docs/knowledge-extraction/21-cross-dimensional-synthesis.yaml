@@ -1,0 +1,108 @@
+##############################################################################
+#  CROSS-DIMENSIONAL SYNTHESIS — Relationship Matrix & Summary
+##############################################################################
+
+synthesis:
+  repository: "agent-zero"
+  total_dimensions: 20
+  total_sub_dimensions: 89
+  generated: "2026-02-08"
+
+  affinity_matrix_highlights:
+    strongest_pairs:
+      - pair: ["δ₁₃ AGENTIC-COGNITIVE", "δ₁₄ AGENTIC-MEMORY"]
+        strength: 0.97
+        relationship: "Memory recall integrated into every loop iteration"
+      - pair: ["δ₁₃ AGENTIC-COGNITIVE", "δ₁₅ AGENTIC-TOOL"]
+        strength: 0.95
+        relationship: "Tool execution is core to every loop iteration"
+      - pair: ["δ₈ INTERFACIAL", "δ₂₀ AGENTIC-CONNECTIVITY"]
+        strength: 0.95
+        relationship: "APIs expose connectivity capabilities"
+      - pair: ["δ₁ STRUCTURAL", "δ₃ ARCHITECTURAL"]
+        strength: 0.92
+        relationship: "Structure implements architecture"
+      - pair: ["δ₃ ARCHITECTURAL", "δ₁₁ EXTENSIONAL"]
+        strength: 0.92
+        relationship: "Extension system is key architectural pattern"
+      - pair: ["δ₁₄ AGENTIC-MEMORY", "δ₁₇ AGENTIC-PROJECTS"]
+        strength: 0.92
+        relationship: "Projects isolate memory namespaces"
+      - pair: ["δ₁₆ AGENTIC-COMMUNICATION", "δ₂₀ AGENTIC-CONNECTIVITY"]
+        strength: 0.92
+        relationship: "A2A protocol enables external agent communication"
+
+  architectural_clusters:
+    core_engine:
+      dimensions: ["δ₁₃", "δ₁₄", "δ₁₅", "δ₁₆"]
+      description: "The agentic core — loop, memory, tools, hierarchy"
+      cohesion: "Very high (avg affinity 0.93)"
+    infrastructure:
+      dimensions: ["δ₁", "δ₃", "δ₇", "δ₁₁"]
+      description: "Structural foundation — code, architecture, config, extensions"
+      cohesion: "High (avg affinity 0.81)"
+    workspace:
+      dimensions: ["δ₁₇", "δ₁₈", "δ₁₉"]
+      description: "Workspace layer — projects, secrets, scheduling"
+      cohesion: "Medium-high (avg affinity 0.78)"
+    interface:
+      dimensions: ["δ₈", "δ₂₀"]
+      description: "External interface — APIs and connectivity"
+      cohesion: "Very high (affinity 0.95)"
+    meta:
+      dimensions: ["δ₆", "δ₁₀", "δ₁₂"]
+      description: "Meta layer — evolution, philosophy, emergence"
+      cohesion: "Medium (avg affinity 0.60)"
+
+  key_findings:
+    1_dual_loop_is_central: |
+      The dual-loop architecture (monologue + message_loop) in Agent.monologue()
+      is the gravitational center of the entire system. Every other dimension
+      either feeds into, hooks onto, or emerges from this loop. It has the
+      highest average affinity across all dimensions.
+
+    2_extension_system_is_pervasive: |
+      With 26 extension points and 41+ registered extensions, the hook system
+      touches every aspect of operation. This makes the system highly customizable
+      but creates a complex event flow that requires understanding the full
+      extension chain to reason about behavior.
+
+    3_memory_creates_emergent_learning: |
+      The combination of 4 memory areas + consolidation + recall + behaviour
+      adjustment creates emergent learning behavior. The agent progressively
+      builds expertise from its interactions.
+
+    4_secrets_are_architectural_concern: |
+      Secret management is woven through 8+ extension points (mask/unmask),
+      the streaming pipeline, history management, and error handling. It's
+      not isolated — it's an architectural cross-cutting concern.
+
+    5_projects_create_isolation: |
+      The projects system creates clean isolation boundaries for memory,
+      knowledge, secrets, and working directories. This enables multi-tenant
+      use cases where different projects don't contaminate each other.
+
+    6_progressive_compression_enables_scale: |
+      The History system's Message→Topic→Bulk compression with 50/30/20 budget
+      allocation enables arbitrarily long conversations — a key differentiator
+      for long-running agentic tasks.
+
+  statistics:
+    python_files: 221
+    api_endpoints: 73
+    tools: 23
+    extension_points: 26
+    registered_extensions: 41
+    prompt_files: "120+"
+    memory_areas: 4
+    agent_profiles: 6
+    built_in_skills: 11
+    llm_providers: "25+"
+    scheduled_task_types: 3
+    mcp_transports: 3
+    websocket_handlers: 4
+    core_classes: 15
+    helper_classes: 20
+    enums: 6
+    dataclasses: 6
+    typed_dicts: 8

@@ -1,0 +1,83 @@
+##############################################################################
+#  δ₁₆ AGENTIC-COMMUNICATION DIMENSION — Agent Hierarchy & Communication
+##############################################################################
+
+dimension:
+  id: "δ₁₆"
+  name: "AGENTIC-COMMUNICATION"
+  priority: P1
+  completeness: 1.0
+  confidence: 0.90
+
+sub_dimensions:
+
+  σ₁₆.₁_agent_hierarchy:
+    description: "Superior/subordinate chain"
+    content:
+      implementation:
+        superior_key: "Agent.DATA_NAME_SUPERIOR = '_superior'"
+        subordinate_key: "Agent.DATA_NAME_SUBORDINATE = '_subordinate'"
+        numbering: "A0 (root) → A1 (subordinate) → A2 (sub-subordinate)"
+        creation: "Agent(number=self.number+1, config=self.config, context=self.context)"
+      context_sharing: |
+        Superior and subordinate share the same AgentContext instance.
+        This enables data sharing via context.data dict and coordination
+        through shared state.
+      delegation_tool: "python/tools/call_subordinate.py"
+      prompt: "agent.system.tool.call_sub.md"
+
+  σ₁₆.₂_inter_agent_communication:
+    description: "Communication patterns between agents"
+    content:
+      superior_to_subordinate:
+        method: "Task description via UserMessage"
+        channel: "Direct agent creation with task"
+      subordinate_to_superior:
+        method: "Response.message return value"
+        channel: "Return from monologue() call"
+      context_broadcast:
+        method: "AgentContext.communicate(msg, broadcast_level)"
+        purpose: "Broadcast messages across context"
+      external_a2a:
+        tool: "python/tools/a2a_chat.py"
+        protocol: "FastA2A protocol"
+        implementation:
+          client: "python/helpers/fasta2a_client.py"
+          server: "python/helpers/fasta2a_server.py"
+
+  σ₁₆.₃_context_types:
+    description: "Different context types for different interaction modes"
+    content:
+      types:
+        USER: "Interactive conversation with a human user"
+        TASK: "Background task execution (scheduler, programmatic)"
+        BACKGROUND: "Background operations"
+      class: "AgentContextType (Enum) in agent.py:39"
+      usage: "Determines behavior and UI presentation"
+
+  σ₁₆.₄_intervention_system:
+    description: "Human-in-the-loop communication"
+    content:
+      mechanism: |
+        During agent execution, the user can send an intervention message.
+        Agent.handle_intervention() checks for pending interventions at
+        multiple points in the loop. When detected, it raises
+        InterventionException, processes the user's feedback, and continues.
+      class: "InterventionException in agent.py:345"
+      check_points:
+        - "After message_loop_start"
+        - "After before_main_llm_call"
+        - "During stream callbacks (reasoning + response)"
+        - "After response_stream_end"
+      prompt: "fw.intervention.md"
+
+cross_references:
+  - target: "δ₁₃ AGENTIC-COGNITIVE"
+    relationship: "delegation_in_loop"
+    strength: 0.85
+  - target: "δ₂₀ AGENTIC-CONNECTIVITY"
+    relationship: "a2a_connectivity"
+    strength: 0.92
+  - target: "δ₈ INTERFACIAL"
+    relationship: "websocket_for_ui_comm"
+    strength: 0.92

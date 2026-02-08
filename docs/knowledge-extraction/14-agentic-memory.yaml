@@ -1,0 +1,144 @@
+##############################################################################
+#  δ₁₄ AGENTIC-MEMORY DIMENSION — Memory Systems
+##############################################################################
+
+dimension:
+  id: "δ₁₄"
+  name: "AGENTIC-MEMORY"
+  priority: P0
+  completeness: 1.0
+  confidence: 0.95
+
+sub_dimensions:
+
+  σ₁₄.₁_memory_architecture:
+    description: "Storage engines, FAISS integration, vector DB"
+    content:
+      engine: "FAISS (Facebook AI Similarity Search)"
+      distance_strategy: "Cosine similarity"
+      embedding_default: "Local sentence-transformers (configurable)"
+      caching: "CacheBackedEmbeddings with InMemoryByteStore or LocalFileStore"
+      wrapper_class: "MyFaiss extends FAISS in python/helpers/memory.py:41"
+      custom_methods:
+        get_by_ids: "Retrieve documents by IDs"
+        get_all_docs: "Return all documents from docstore"
+      storage_location: "memory/ directory with area-specific subdirectories"
+      index_persistence: "FAISS index saved/loaded from disk per area"
+
+  σ₁₄.₂_knowledge_vs_memory:
+    description: "Static knowledge vs dynamic learning"
+    content:
+      knowledge:
+        nature: "Static, authoritative, permanent"
+        source: "User-provided files, imported documents"
+        metadata_marker: "knowledge_source=true"
+        storage: "knowledge/ directory (main/, solutions/ subdirs)"
+        import: "python/helpers/knowledge_import.py"
+      memory:
+        nature: "Dynamic, experiential, evolving"
+        source: "Agent's own learnings during conversations"
+        metadata_marker: "knowledge_source=false"
+        lifecycle: "Created → Consolidated → Evolved → Potentially forgotten"
+      distinction: |
+        Knowledge is immutable reference material the agent consults.
+        Memory is the agent's accumulated experience that grows and
+        consolidates over time through intelligent compression.
+
+  σ₁₄.₃_memory_areas_taxonomy:
+    description: "MAIN, FRAGMENTS, SOLUTIONS, INSTRUMENTS"
+    content:
+      areas:
+        MAIN:
+          enum: "Memory.Area.MAIN"
+          purpose: "User-provided information and primary knowledge"
+          persistence: "Permanent unless explicitly deleted"
+        FRAGMENTS:
+          enum: "Memory.Area.FRAGMENTS"
+          purpose: "Auto-extracted learnings from conversations"
+          creation: "_50_memorize_fragments.py extension at monologue_end"
+          consolidation: "Subject to intelligent merge/replace/update"
+        SOLUTIONS:
+          enum: "Memory.Area.SOLUTIONS"
+          purpose: "Working patterns and problem-solution pairs"
+          creation: "_51_memorize_solutions.py extension at monologue_end"
+          usage: "Quick lookup for known problem resolutions"
+        INSTRUMENTS:
+          enum: "Memory.Area.INSTRUMENTS"
+          purpose: "Custom tool descriptions and capabilities"
+          usage: "Helps agent understand available tools"
+
+  σ₁₄.₄_recall_mechanisms:
+    description: "Query generation, similarity search, filtering"
+    content:
+      extension: "_50_recall_memories.py in message_loop_prompts_after"
+      async_execution: "Non-blocking background task via DeferredTask"
+      wait_extension: "_91_recall_wait.py ensures recall completes before LLM call"
+      process:
+        1: "Generate search queries from conversation context"
+        2: "Execute vector similarity search against FAISS index"
+        3: "Apply threshold filtering (configurable similarity threshold)"
+        4: "Post-filter via memory_recall_post_filter (LLM-based relevance)"
+        5: "Format results as extras injected into prompt"
+      search_method: "Memory.search(agent, query, count, threshold, filter, area)"
+      query_generation: "LLM-based keyword extraction (memory.memories_query.sys.md)"
+      filtering: "LLM-based relevance filtering (memory.memories_filter.sys.md)"
+
+  σ₁₄.₅_memorization_processes:
+    description: "Extraction, consolidation, evolution"
+    content:
+      extraction:
+        fragments_extension: "_50_memorize_fragments.py at monologue_end"
+        solutions_extension: "_51_memorize_solutions.py at monologue_end"
+        trigger: "Automatic at end of each monologue cycle"
+      consolidation:
+        module: "python/helpers/memory_consolidation.py (~34KB)"
+        config_class: "ConsolidationConfig"
+        result_class: "ConsolidationResult"
+        actions:
+          MERGE: "Combine multiple related memories into one"
+          REPLACE: "Replace existing memory with improved version (requires similarity > 0.9)"
+          UPDATE: "Update existing memory with new information"
+          KEEP_SEPARATE: "Maintain both memories as distinct"
+          SKIP: "Do not save the new memory"
+        process:
+          1: "Find similar existing memories via vector search"
+          2: "Send new + existing memories to LLM for analysis"
+          3: "LLM decides consolidation action"
+          4: "Execute action (merge/replace/update/keep/skip)"
+        prompts:
+          system: "memory.consolidation.sys.md"
+          message: "memory.consolidation.msg.md"
+        quality_goals: "Preserve knowledge, reduce redundancy"
+
+  σ₁₄.₆_short_term_memory:
+    description: "History structure, compression, summarization"
+    content:
+      class: "History in python/helpers/history.py"
+      record_types:
+        Message: "Individual message (ai flag, content, tokens, optional summary)"
+        Topic: "Compressed group of messages (content, raw_content, tokens)"
+        Bulk: "Oldest compressed messages merged together"
+      compression_constants:
+        BULK_MERGE_COUNT: 3
+        TOPICS_KEEP_COUNT: 3
+        CURRENT_TOPIC_RATIO: 0.5
+        HISTORY_TOPIC_RATIO: 0.3
+        HISTORY_BULK_RATIO: 0.2
+        TOPIC_COMPRESS_RATIO: 0.65
+        LARGE_MESSAGE_TO_TOPIC_RATIO: 0.5
+      strategy: |
+        Messages → Topics → Bulk. Current topic gets 50% of context budget,
+        recent topics get 30%, oldest bulk gets 20%. This enables near-infinite
+        conversation length with graceful information degradation.
+      organization_extension: "_10_organize_history.py in message_loop_end"
+
+cross_references:
+  - target: "δ₁₃ AGENTIC-COGNITIVE"
+    relationship: "memory_used_in_loop"
+    strength: 0.97
+  - target: "δ₁₇ AGENTIC-PROJECTS"
+    relationship: "project_memory_isolation"
+    strength: 0.92
+  - target: "δ₇ CONFIGURATIONAL"
+    relationship: "memory_settings"
+    strength: 0.72

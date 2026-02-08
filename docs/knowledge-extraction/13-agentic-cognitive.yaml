@@ -1,0 +1,237 @@
+##############################################################################
+#  δ₁₃ AGENTIC-COGNITIVE DIMENSION — Agent Loop & Reasoning
+##############################################################################
+
+dimension:
+  id: "δ₁₃"
+  name: "AGENTIC-COGNITIVE"
+  priority: P0
+  completeness: 1.0
+  confidence: 0.97
+
+sub_dimensions:
+
+  σ₁₃.₁_agent_loop_architecture:
+    description: "Main agent loop, monologue cycle, iteration patterns"
+    content:
+      overview: |
+        The Agent class (agent.py:356) implements a dual-loop architecture:
+        OUTER LOOP (monologue): Wraps the entire reasoning cycle. Handles
+        critical exceptions, retries, and monologue start/end extensions.
+        INNER LOOP (message_loop): Iterates until a tool returns break_loop=True.
+        Each iteration: prepare prompt → call LLM → parse response → execute tools.
+      outer_loop:
+        method: "Agent.monologue() at agent.py:383"
+        structure: |
+          while True:
+            loop_data = LoopData(user_message=self.last_user_message)
+            call_extensions("monologue_start")
+            # INNER LOOP
+            while True:
+              iteration += 1
+              call_extensions("message_loop_start")
+              handle_intervention()
+              prompt = prepare_prompt()
+              call_extensions("before_main_llm_call")
+              response = call_chat_model(prompt)
+              call_extensions("response_stream_end")
+              hist_add_ai_response(response)
+              tools_result = process_tools(response)
+              if tools_result: return tools_result
+            # on exception:
+            #   InterventionException → continue loop
+            #   RepairableException → forward error to LLM
+            #   HandledException → end with error
+            #   Other → retry with exponential backoff
+        state_object: "LoopData"
+        state_fields:
+          iteration: "int — current iteration counter"
+          system: "list — system prompt messages"
+          user_message: "history.Message | None"
+          history_output: "list[history.OutputMessage]"
+          extras_temporary: "OrderedDict — cleared each iteration"
+          extras_persistent: "OrderedDict — persists across iterations"
+          last_response: "str — previous response for repeat detection"
+          params_temporary: "dict — cleared each iteration"
+          params_persistent: "dict — persists across iterations"
+          current_tool: "Tool | None — currently executing tool"
+      inner_loop:
+        termination_conditions:
+          - "Tool returns Response(break_loop=True) — normal completion"
+          - "InterventionException — user intervention, skips to next iteration"
+          - "RepairableException — forwarded to LLM as error message"
+          - "HandledException — fatal, ends the loop"
+          - "Unhandled exception — retry with backoff (max 5 retries)"
+        repeat_detection: |
+          If agent_response == loop_data.last_response, a warning
+          message (fw.msg_repeat.md) is injected to break the cycle.
+      extension_hooks_in_loop:
+        - "monologue_start: Before outer loop iteration"
+        - "message_loop_start: Before each inner iteration"
+        - "message_loop_prompts_before: Before prompt preparation"
+        - "message_loop_prompts_after: After prompt preparation"
+        - "before_main_llm_call: Just before LLM invocation"
+        - "reasoning_stream_chunk: During reasoning token streaming"
+        - "response_stream_chunk: During response token streaming"
+        - "reasoning_stream_end: After reasoning completes"
+        - "response_stream_end: After response completes"
+        - "tool_execute_before: Before each tool runs"
+        - "tool_execute_after: After each tool runs"
+        - "message_loop_end: After inner loop iteration"
+        - "monologue_end: After outer loop exits"
+
+  σ₁₃.₂_reasoning_patterns:
+    description: "LLM interaction, prompt construction, response processing"
+    content:
+      prompt_system:
+        directory: "prompts/"
+        file_count: "120+ markdown files"
+        naming_scheme: "Dot-separated namespaces (agent.system.main.md, fw.code.running.md)"
+        template_features:
+          variable_substitution: "{variable_name} in prompt text"
+          file_inclusion: "@filename.md includes another prompt file"
+          dynamic_loaders: "VariablesPlugin for runtime data injection"
+        prompt_categories:
+          system: "agent.system.* — Main system prompt, role, communication, tips, behaviour"
+          tools: "agent.system.tool.* — Per-tool instructions (13 tools)"
+          framework: "fw.* — Framework messages (intervention, nudge, repeat, errors, code execution)"
+          memory: "memory.* — Consolidation, keyword extraction, query, filter, summarize"
+          context: "agent.context.* / agent.extras.* — Context extras, project info, agent info"
+          behaviour: "behaviour.* — Search, merge behaviour prompts"
+      prompt_assembly:
+        method: "Agent.prepare_prompt(loop_data) at agent.py"
+        sequence:
+          1: "Build system prompt via get_system_prompt() + system_prompt extensions"
+          2: "Apply message_loop_prompts_before extensions"
+          3: "Compile history output from History.output()"
+          4: "Apply message_loop_prompts_after extensions (recall memories, project extras, skills, datetime, agent info)"
+          5: "Assemble final messages: [SystemMessage] + history + extras"
+      llm_interaction:
+        method: "Agent.call_chat_model() at agent.py"
+        streaming: true
+        callbacks:
+          reasoning_callback: "Processes reasoning/thinking tokens"
+          response_callback: "Processes response tokens"
+        result_class: "ChatGenerationResult in models.py"
+        thinking_support: |
+          Handles <thinking> tags and native reasoning (Claude, etc.).
+          ChatGenerationResult.add_chunk() routes chunks to reasoning vs response.
+      response_processing:
+        tool_extraction: |
+          Agent.process_tools() parses JSON tool calls from response text.
+          Uses DirtyJson parser for fault-tolerant JSON extraction.
+          Tool format: {"tool_name": "name", "tool_args": {...}}
+
+  σ₁₃.₃_decision_mechanisms:
+    description: "Tool selection, action planning, goal decomposition"
+    content:
+      tool_selection:
+        parsing: "JSON extraction from agent message using DirtyJson"
+        lookup_order:
+          1: "MCP tool lookup (dynamic tools from connected MCP servers)"
+          2: "Local tool fallback (python/tools/ directory)"
+        tool_request_format: |
+          The agent outputs JSON in its response:
+          {"tool_name": "<name>", "tool_args": {"arg1": "val1"}}
+      execution_flow:
+        1: "Parse tool request from agent response"
+        2: "Lookup tool (MCP first, then local)"
+        3: "Execute tool_execute_before extensions (unmask secrets, etc.)"
+        4: "Call tool.before_execution()"
+        5: "Call tool.execute(**kwargs)"
+        6: "Call tool.after_execution(response)"
+        7: "Execute tool_execute_after extensions (mask secrets, etc.)"
+        8: "Add tool result to history"
+        9: "If Response.break_loop=True, exit message loop"
+      intervention_system:
+        description: "User can intervene during agent execution"
+        mechanism: |
+          Agent.handle_intervention() is called at multiple points in the loop.
+          If self.intervention is set (by UI), it raises InterventionException,
+          which skips the current iteration and incorporates user feedback.
+
+  σ₁₃.₄_context_management:
+    description: "Context window, history management"
+    content:
+      loop_data_pattern:
+        description: "LoopData object at agent.py:326"
+        purpose: "Shares state across extensions within a single message loop"
+        key_distinction:
+          temporary: "extras_temporary, params_temporary — cleared each iteration"
+          persistent: "extras_persistent, params_persistent — persist across iterations"
+      history_management:
+        class: "History in python/helpers/history.py"
+        structure:
+          messages: "List[Message] — individual messages"
+          topics: "List[Topic] — compressed message groups"
+          bulk: "Bulk | None — oldest compressed history"
+        compression_strategy:
+          current_topic_ratio: 0.5
+          history_topic_ratio: 0.3
+          history_bulk_ratio: 0.2
+          topic_compress_ratio: 0.65
+          goal: "Near-infinite conversation length via progressive compression"
+        records:
+          Message: "Individual message (ai, content, tokens, summary)"
+          Topic: "Compressed group of messages"
+          Bulk: "Oldest compressed history block"
+        extension: "_10_organize_history.py in message_loop_end"
+
+  σ₁₃.₅_self_modification:
+    description: "Behavior adjustment, learning, RepairableException"
+    content:
+      repairable_exception:
+        class: "RepairableException in python/helpers/errors.py"
+        mechanism: |
+          When a tool raises RepairableException, the error message is forwarded
+          to the LLM instead of crashing. The agent can then adjust its approach.
+          This enables self-repair: the agent sees the error and tries to fix it.
+      behaviour_adjustment:
+        tool: "python/tools/behaviour_adjustment.py"
+        storage: "behaviour.md file in agent's memory directory"
+        mechanism: |
+          The agent can call the behaviour_adjustment tool to modify its own
+          behavior instructions. These are stored in behaviour.md and loaded
+          via the _20_behaviour_prompt.py system_prompt extension.
+        prompt: "agent.system.behaviour.md + agent.system.behaviour_default.md"
+      memory_based_learning:
+        fragments: "Auto-extracted learnings saved to FRAGMENTS memory area"
+        solutions: "Working patterns saved to SOLUTIONS memory area"
+        extensions:
+          - "_50_memorize_fragments.py in monologue_end"
+          - "_51_memorize_solutions.py in monologue_end"
+
+  σ₁₃.₆_hierarchical_agency:
+    description: "Superior/subordinate delegation, context sharing"
+    content:
+      hierarchy:
+        constants:
+          DATA_NAME_SUPERIOR: "_superior"
+          DATA_NAME_SUBORDINATE: "_subordinate"
+        mechanism: |
+          Agents can delegate tasks to subordinate agents via the call_subordinate tool.
+          The superior creates a new Agent with number = self.number + 1.
+          Both share the same AgentContext reference for data sharing.
+        data_flow:
+          superior_to_subordinate: "Task description via UserMessage"
+          subordinate_to_superior: "Result via Response.message"
+          shared_context: "Same AgentContext instance, shared data dict"
+        tool: "python/tools/call_subordinate.py"
+      naming: "Agents are named A0, A1, A2... based on hierarchy depth"
+
+cross_references:
+  - target: "δ₁₄ AGENTIC-MEMORY"
+    relationship: "memory_recall_in_loop"
+    strength: 0.97
+  - target: "δ₁₅ AGENTIC-TOOL"
+    relationship: "tool_execution_in_loop"
+    strength: 0.95
+  - target: "δ₁₆ AGENTIC-COMMUNICATION"
+    relationship: "hierarchical_delegation"
+    strength: 0.85
+  - target: "δ₁₁ EXTENSIONAL"
+    relationship: "extension_hooks"
+    strength: 0.75
+  - target: "δ₃ ARCHITECTURAL"
+    relationship: "design_patterns"
+    strength: 0.92

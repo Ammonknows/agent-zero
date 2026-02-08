@@ -1,0 +1,135 @@
+##############################################################################
+#  δ₃ ARCHITECTURAL DIMENSION — Design Patterns & Architecture
+##############################################################################
+
+dimension:
+  id: "δ₃"
+  name: "ARCHITECTURAL"
+  priority: P0
+  completeness: 1.0
+  confidence: 0.94
+
+sub_dimensions:
+
+  σ₃.₁_overall_architecture:
+    description: "High-level architectural pattern"
+    content:
+      pattern: "Agent-based architecture with plugin/extension system"
+      runtime_model: "Containerized (Docker) with web API interface"
+      core_components:
+        agent_core: "agent.py — Agent, AgentContext, LoopData"
+        model_layer: "models.py — LLM abstraction via LiteLLM + LangChain"
+        extension_system: "python/helpers/extension.py — Hook-based plugin architecture"
+        tool_system: "python/helpers/tool.py — Abstract tool framework"
+        memory_system: "python/helpers/memory.py — FAISS-backed vector memory"
+        web_layer: "run_ui.py — Flask+Starlette+SocketIO web server"
+      architectural_layers:
+        presentation: "Web UI (webui/), REST API (python/api/), WebSocket"
+        application: "Agent loop, tool execution, extension processing"
+        domain: "Memory, knowledge, skills, projects"
+        infrastructure: "Docker, SSH, file system, LLM providers"
+
+  σ₃.₂_design_patterns:
+    description: "Key design patterns used"
+    content:
+      patterns:
+        dual_loop:
+          name: "Dual Loop (Monologue + Message Loop)"
+          location: "agent.py:383"
+          description: "Outer monologue loop with inner message processing loop"
+        observer_hooks:
+          name: "Observer/Hook Pattern"
+          location: "python/helpers/extension.py"
+          description: "26 extension points with priority-ordered observers"
+        abstract_tool:
+          name: "Abstract Tool Pattern"
+          location: "python/helpers/tool.py"
+          description: "Tool base class with lifecycle methods (before/execute/after)"
+        registry:
+          name: "Context Registry"
+          location: "agent.py:45 (AgentContext)"
+          description: "Static _contexts dict as registry with thread-safe access"
+        template_method:
+          name: "Template Method (Tool lifecycle)"
+          location: "python/helpers/tool.py"
+          description: "before_execution → execute → after_execution"
+        strategy:
+          name: "Strategy Pattern (LLM Providers)"
+          location: "models.py"
+          description: "Swappable model providers via LiteLLM abstraction"
+        singleton:
+          name: "Singleton (MCPConfig)"
+          location: "python/helpers/mcp_handler.py"
+          description: "MCPConfig.get_instance() singleton pattern"
+        chain_of_responsibility:
+          name: "Chain of Responsibility (Extension priorities)"
+          location: "python/extensions/*/_NN_*.py"
+          description: "Numbered extensions processed in sequence"
+        facade:
+          name: "Facade (run_ui.py)"
+          location: "run_ui.py"
+          description: "Single entry point orchestrating all subsystems"
+        decorator:
+          name: "Decorator (CacheBackedEmbeddings)"
+          location: "python/helpers/memory.py"
+          description: "Embedding caching wrapper"
+
+  σ₃.₃_component_boundaries:
+    description: "Module boundaries and coupling"
+    content:
+      tight_coupling:
+        - "Agent ↔ AgentContext: Mutual reference"
+        - "Agent ↔ LoopData: Agent creates and manages LoopData"
+        - "Agent ↔ History: Agent owns History instance"
+      loose_coupling:
+        - "Agent ↔ Tools: Via abstract Tool base class"
+        - "Agent ↔ Extensions: Via call_extensions() dispatch"
+        - "Agent ↔ Models: Via ModelConfig + LiteLLM abstraction"
+        - "Agent ↔ Memory: Via Memory helper module"
+      dependency_direction: |
+        Presentation → Application → Domain → Infrastructure
+        Extensions and tools depend on Agent but Agent doesn't depend on specific extensions/tools.
+
+  σ₃.₄_error_handling_architecture:
+    description: "Exception hierarchy and error strategy"
+    content:
+      exception_types:
+        InterventionException: "User interruption — skip current iteration, continue loop"
+        RepairableException: "Fixable error — forward to LLM for self-repair"
+        HandledException: "Fatal error — cannot recover, end loop"
+        unhandled: "Unknown error — retry with exponential backoff (max 5 retries)"
+      strategy: |
+        Errors are classified by recoverability. RepairableException is key:
+        it allows the agent to see its own errors and attempt fixes, enabling
+        self-healing behavior. This is a core architectural decision.
+
+  σ₃.₅_data_flow_architecture:
+    description: "Information flow patterns"
+    content:
+      request_flow: "User → API → AgentContext → Agent.monologue() → LLM → Tools → Response"
+      streaming_flow: "LLM stream → ChatGenerationResult → callbacks → extensions → WebSocket → UI"
+      memory_flow: "Conversation → monologue_end → memorize_fragments/solutions → FAISS → recall_memories → prompt"
+      secret_flow: "§§secret(KEY) → unmask before tool → real value → mask after tool → §§secret(KEY)"
+
+  σ₃.₆_scalability:
+    description: "Multi-agent and scaling patterns"
+    content:
+      agent_hierarchy: "Superior delegates to subordinate (A0→A1→A2...)"
+      context_isolation: "AgentContext per conversation thread"
+      concurrent_contexts: "Multiple AgentContext instances in parallel"
+      background_tasks: "DeferredTask for async operations"
+      event_loop: "EventLoopThread for async management"
+
+cross_references:
+  - target: "δ₁ STRUCTURAL"
+    relationship: "structural_implementation"
+    strength: 0.92
+  - target: "δ₁₃ AGENTIC-COGNITIVE"
+    relationship: "agent_loop_pattern"
+    strength: 0.92
+  - target: "δ₁₁ EXTENSIONAL"
+    relationship: "extension_pattern"
+    strength: 0.92
+  - target: "δ₁₀ PHILOSOPHICAL"
+    relationship: "design_principles"
+    strength: 0.85

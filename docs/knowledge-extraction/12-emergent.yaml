@@ -1,0 +1,95 @@
+##############################################################################
+#  δ₁₂ EMERGENT DIMENSION — Emergent Properties
+##############################################################################
+
+dimension:
+  id: "δ₁₂"
+  name: "EMERGENT"
+  priority: P2
+  completeness: 1.0
+  confidence: 0.82
+
+sub_dimensions:
+
+  σ₁₂.₁_self_healing:
+    description: "Emergent self-repair capability"
+    content:
+      mechanism: |
+        The combination of RepairableException + the monologue loop creates
+        self-healing behavior. When a tool fails with a repairable error,
+        the error message is fed back to the LLM, which can analyze what
+        went wrong and try a different approach. This wasn't a single
+        feature — it emerges from the interaction of error handling
+        architecture and the agent loop design.
+      components:
+        - "RepairableException (errors.py)"
+        - "Inner message loop retry logic (agent.py)"
+        - "Error forwarding to LLM history"
+
+  σ₁₂.₂_progressive_learning:
+    description: "Emergent knowledge accumulation"
+    content:
+      mechanism: |
+        Through the interplay of fragment extraction, solution memorization,
+        memory consolidation, and recall, the agent progressively builds
+        a knowledge base from its conversations. Over time, the agent
+        becomes more effective at tasks it has encountered before.
+      components:
+        - "Memorize fragments (monologue_end extension)"
+        - "Memorize solutions (monologue_end extension)"
+        - "Memory consolidation (merge/replace/update)"
+        - "Memory recall (message_loop_prompts_after extension)"
+
+  σ₁₂.₃_infinite_conversations:
+    description: "Emergent unbounded conversation capability"
+    content:
+      mechanism: |
+        The History system's progressive compression (Messages → Topics → Bulk)
+        with ratio-based allocation (50/30/20) creates the emergent property
+        of near-infinite conversation length. No single component achieves
+        this — it's the interaction of compression, summarization, and
+        context budget management.
+      components:
+        - "History class with Message/Topic/Bulk records"
+        - "_10_organize_history.py extension"
+        - "Token counting and budget allocation"
+        - "LLM-based summarization"
+
+  σ₁₂.₄_hierarchical_problem_solving:
+    description: "Emergent task decomposition capability"
+    content:
+      mechanism: |
+        The agent can break complex tasks into subtasks delegated to
+        subordinate agents, each sharing context but operating independently.
+        This creates emergent hierarchical problem-solving where the system
+        tackles problems too complex for a single agent.
+      components:
+        - "call_subordinate tool"
+        - "Agent hierarchy (A0→A1→A2)"
+        - "Shared AgentContext"
+        - "Bidirectional result flow"
+
+  σ₁₂.₅_adaptive_behavior:
+    description: "Emergent runtime adaptation"
+    content:
+      mechanism: |
+        The behaviour_adjustment tool + behaviour.md + behaviour prompt
+        injection creates an agent that can modify its own instructions
+        based on user feedback or task requirements. Combined with
+        memory-based learning, the agent adapts its approach over time.
+      components:
+        - "behaviour_adjustment tool"
+        - "behaviour.md storage"
+        - "_20_behaviour_prompt.py extension"
+        - "Memory-based pattern recognition"
+
+cross_references:
+  - target: "δ₁₃ AGENTIC-COGNITIVE"
+    relationship: "loop_enables_emergence"
+    strength: 0.85
+  - target: "δ₁₄ AGENTIC-MEMORY"
+    relationship: "memory_enables_learning"
+    strength: 0.75
+  - target: "δ₃ ARCHITECTURAL"
+    relationship: "architecture_produces_emergence"
+    strength: 0.65

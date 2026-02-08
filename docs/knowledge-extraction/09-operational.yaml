@@ -1,0 +1,96 @@
+##############################################################################
+#  δ₉ OPERATIONAL DIMENSION — Runtime Behavior
+##############################################################################
+
+dimension:
+  id: "δ₉"
+  name: "OPERATIONAL"
+  priority: P1
+  completeness: 1.0
+  confidence: 0.85
+
+sub_dimensions:
+
+  σ₉.₁_runtime_model:
+    description: "How the system runs in production"
+    content:
+      entry_point: "run_ui.py → Flask+Starlette server"
+      server: "Uvicorn ASGI server"
+      port: "9000 (configurable via range 9000-9009)"
+      container: "Docker-based deployment"
+      process_management: "Supervisord (in container)"
+      services_in_container:
+        - "Agent Zero API (run_ui.py)"
+        - "SearXNG search engine"
+        - "SSH server"
+        - "Tunnel API"
+
+  σ₉.₂_threading_model:
+    description: "Concurrency architecture"
+    content:
+      main_thread: "Web server (uvicorn)"
+      worker_threads: "Agent execution via DeferredTask"
+      event_loop: "EventLoopThread for async operations"
+      context_safety: "AgentContext._contexts_lock (threading.RLock)"
+      async_patterns:
+        - "nest_asyncio for nested event loops"
+        - "DeferredTask wraps agent execution in separate threads"
+        - "Memory recall runs as async background task"
+
+  σ₉.₃_agent_lifecycle:
+    description: "Agent creation to termination"
+    content:
+      creation:
+        1: "AgentContext.__init__() creates context"
+        2: "Agent.__init__() creates agent with config"
+        3: "call_extensions('agent_init') initializes extensions"
+        4: "Memory system initialized via _10_memory_init.py"
+      execution:
+        1: "User message received via API"
+        2: "AgentContext._process_chain() starts processing"
+        3: "Agent.monologue() enters dual loop"
+        4: "Extensions fire at 26+ hook points"
+        5: "Tools execute as needed"
+        6: "Response delivered via WebSocket stream"
+      termination:
+        - "Response tool sets break_loop=True → normal exit"
+        - "HandledException → error exit"
+        - "Context.kill_process() → forced termination"
+        - "context.task.kill() → task cancellation"
+
+  σ₉.₄_error_recovery:
+    description: "Runtime error handling strategy"
+    content:
+      retry_mechanism:
+        max_retries: 5
+        strategy: "Exponential backoff"
+        delay: "Starts at 0s, increases with random jitter"
+      error_classification:
+        InterventionException: "Skip iteration, continue"
+        RepairableException: "Forward to LLM for self-fix"
+        HandledException: "Fatal, end loop"
+        unhandled: "Retry with backoff"
+      repeat_detection: |
+        If agent produces same response twice, inject warning message
+        (fw.msg_repeat.md) to break potential infinite loops.
+
+  σ₉.₅_resource_management:
+    description: "Resource usage patterns"
+    content:
+      context_window: "Managed via History compression (Message→Topic→Bulk)"
+      rate_limiting: "python/helpers/rate_limiter.py for LLM API calls"
+      token_tracking: "python/helpers/tokens.py for token counting"
+      file_uploads: "Max 5GB via Flask upload"
+      state_monitoring: "python/helpers/state_monitor.py"
+      system_resources: "Displayed via _30_system_resources.py banner"
+
+cross_references:
+  - target: "δ₂ FUNCTIONAL"
+    relationship: "runtime_of_functions"
+    strength: 0.92
+  - target: "δ₁₃ AGENTIC-COGNITIVE"
+    relationship: "loop_is_runtime"
+    strength: 0.92
+  - target: "δ₇ CONFIGURATIONAL"
+    relationship: "config_drives_runtime"
+    strength: 0.82

@@ -1,0 +1,104 @@
+##############################################################################
+#  δ₇ CONFIGURATIONAL DIMENSION — Settings & Customization
+##############################################################################
+
+dimension:
+  id: "δ₇"
+  name: "CONFIGURATIONAL"
+  priority: P0
+  completeness: 1.0
+  confidence: 0.89
+
+sub_dimensions:
+
+  σ₇.₁_settings_architecture:
+    description: "Settings TypedDict and defaults system"
+    content:
+      main_class: "Settings (TypedDict) in python/helpers/settings.py"
+      categories:
+        chat_model: "provider, name, api_base, kwargs, ctx_length, ctx_history, vision, rate limits"
+        utility_model: "provider, name, api_base, kwargs, ctx_length, ctx_input, rate limits"
+        embedding_model: "provider, name, api_base"
+        browser_model: "provider, name, api_base"
+        agent_behaviour: "prompts_subdir, memory_subdir, knowledge_subdirs"
+        code_execution: "ssh_enabled, ssh_addr, ssh_port, ssh_user, ssh_pass, docker"
+        browser: "browser_http_headers"
+      env_override: |
+        Any setting can be overridden via environment variable with A0_SET_ prefix.
+        get_default_value(name, value) loads from .env with type normalization.
+      persistence: "Settings stored in JSON, loaded on initialization"
+
+  σ₇.₂_model_providers:
+    description: "LLM provider configuration"
+    content:
+      config_file: "conf/model_providers.yaml"
+      supported_providers:
+        chat:
+          - "Anthropic (Claude)"
+          - "OpenAI (GPT-4, etc.)"
+          - "Google (Gemini)"
+          - "Groq"
+          - "Mistral"
+          - "OpenRouter"
+          - "Azure OpenAI"
+          - "AWS Bedrock"
+          - "DeepSeek"
+          - "GitHub Copilot"
+          - "LM Studio"
+          - "Ollama"
+          - "Sambanova"
+          - "Venice"
+          - "xAI"
+          - "Z.AI"
+        embedding:
+          - "OpenAI"
+          - "Ollama"
+          - "HuggingFace (local sentence-transformers)"
+      model_config_class: "ModelConfig in models.py"
+      model_types: "CHAT, EMBEDDING (ModelType enum)"
+      abstraction: "LiteLLM for universal provider compatibility"
+
+  σ₇.₃_agent_profiles:
+    description: "Agent profile system"
+    content:
+      directory: "agents/"
+      profiles:
+        default: "Default agent template"
+        agent0: "Agent Zero specialized"
+        developer: "Development-focused"
+        researcher: "Research-focused"
+        hacker: "Security-focused"
+        _example: "Template for creating new profiles"
+      structure:
+        agent_json: "Profile configuration (title, description)"
+        _context_md: "Agent-specific context prompt"
+        extensions: "Optional profile-specific extensions"
+      activation: "Via AgentConfig.profile field"
+
+  σ₇.₄_environment_configuration:
+    description: "Environment variables and .env management"
+    content:
+      primary_env: ".env file at project root"
+      secrets_env: "usr/secrets.env (global secrets)"
+      project_env: ".a0proj/secrets.env (per-project secrets)"
+      prefix_convention: "A0_SET_ prefix for setting overrides"
+      dotenv_module: "python/helpers/dotenv.py for reading/writing"
+
+  σ₇.₅_runtime_configuration:
+    description: "Runtime settings and dynamic configuration"
+    content:
+      initialization: "initialize.py merges settings from multiple sources"
+      dynamic_settings: "UI can modify settings at runtime via API"
+      migration: "python/helpers/migration.py handles setting schema changes"
+      mcp_config: "MCP servers configured via mcp_servers string in AgentConfig"
+
+cross_references:
+  - target: "δ₁₇ AGENTIC-PROJECTS"
+    relationship: "project_config_override"
+    strength: 0.75
+  - target: "δ₁₈ AGENTIC-SECRETS"
+    relationship: "secrets_env_config"
+    strength: 0.82
+  - target: "δ₂₀ AGENTIC-CONNECTIVITY"
+    relationship: "model_provider_config"
+    strength: 0.55

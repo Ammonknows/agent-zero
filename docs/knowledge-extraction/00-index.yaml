@@ -1,0 +1,112 @@
+##############################################################################
+#  AGENT ZERO — AGENTIC KNOWLEDGE ARCHITECTURE EXTRACTION v3.0
+#  Comprehensive Epistemic Synthesis of the Agent Zero Framework
+#  Generated: 2026-02-08
+##############################################################################
+
+meta:
+  repository: agent-zero
+  extraction_version: "3.0"
+  generated: "2026-02-08"
+  total_dimensions: 20
+  total_sub_dimensions: 89
+  python_files: 221
+  api_endpoints: 73
+  tools: 23
+  extension_points: 26
+  skills: 11
+  prompt_files: 120+
+
+documents:
+  - file: "01-structural.yaml"
+    dimension: "δ₁ STRUCTURAL"
+    description: "Physical codebase organization and topology"
+
+  - file: "02-functional.yaml"
+    dimension: "δ₂ FUNCTIONAL"
+    description: "Behavioral capabilities and operations"
+
+  - file: "03-architectural.yaml"
+    dimension: "δ₃ ARCHITECTURAL"
+    description: "Design patterns and architecture"
+
+  - file: "04-semantic.yaml"
+    dimension: "δ₄ SEMANTIC"
+    description: "Domain model and concepts"
+
+  - file: "05-relational.yaml"
+    dimension: "δ₅ RELATIONAL"
+    description: "Dependencies and information flows"
+
+  - file: "06-temporal.yaml"
+    dimension: "δ₆ TEMPORAL"
+    description: "Evolution and versioning"
+
+  - file: "07-configurational.yaml"
+    dimension: "δ₇ CONFIGURATIONAL"
+    description: "Settings and customization"
+
+  - file: "08-interfacial.yaml"
+    dimension: "δ₈ INTERFACIAL"
+    description: "APIs and protocols"
+
+  - file: "09-operational.yaml"
+    dimension: "δ₉ OPERATIONAL"
+    description: "Runtime behavior"
+
+  - file: "10-philosophical.yaml"
+    dimension: "δ₁₀ PHILOSOPHICAL"
+    description: "Design principles and identity"
+
+  - file: "11-extensional.yaml"
+    dimension: "δ₁₁ EXTENSIONAL"
+    description: "Extension mechanisms"
+
+  - file: "12-emergent.yaml"
+    dimension: "δ₁₂ EMERGENT"
+    description: "Emergent properties"
+
+  - file: "13-agentic-cognitive.yaml"
+    dimension: "δ₁₃ AGENTIC-COGNITIVE"
+    description: "Agent loop and reasoning"
+
+  - file: "14-agentic-memory.yaml"
+    dimension: "δ₁₄ AGENTIC-MEMORY"
+    description: "Memory systems"
+
+  - file: "15-agentic-tool.yaml"
+    dimension: "δ₁₅ AGENTIC-TOOL"
+    description: "Tool architecture"
+
+  - file: "16-agentic-communication.yaml"
+    dimension: "δ₁₆ AGENTIC-COMMUNICATION"
+    description: "Agent hierarchy and communication"
+
+  - file: "17-agentic-projects.yaml"
+    dimension: "δ₁₇ AGENTIC-PROJECTS"
+    description: "Projects system"
+
+  - file: "18-agentic-secrets.yaml"
+    dimension: "δ₁₈ AGENTIC-SECRETS"
+    description: "Secrets management"
+
+  - file: "19-agentic-scheduler.yaml"
+    dimension: "δ₁₉ AGENTIC-SCHEDULER"
+    description: "Task scheduling"
+
+  - file: "20-agentic-connectivity.yaml"
+    dimension: "δ₂₀ AGENTIC-CONNECTIVITY"
+    description: "External integration"
+
+  - file: "21-cross-dimensional-synthesis.yaml"
+    description: "Cross-dimensional relationship matrix and synthesis"
+
+coverage:
+  structural: 1.0
+  functional: 1.0
+  architectural: 1.0
+  agentic_core: 1.0
+  agentic_extended: 1.0
+  behavioral: 1.0
+  interface: 1.0
+  meta: 1.0

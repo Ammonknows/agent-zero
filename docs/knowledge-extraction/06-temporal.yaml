@@ -1,0 +1,58 @@
+##############################################################################
+#  δ₆ TEMPORAL DIMENSION — Evolution & Versioning
+##############################################################################
+
+dimension:
+  id: "δ₆"
+  name: "TEMPORAL"
+  priority: P2
+  completeness: 1.0
+  confidence: 0.80
+
+sub_dimensions:
+
+  σ₆.₁_version_evolution:
+    description: "Framework version history and migration"
+    content:
+      migration_system: "python/helpers/migration.py"
+      settings_versioning: "Settings TypedDict includes version field"
+      update_checking: "_10_update_check.py extension in user_message_ui"
+      dependency_management: "requirements.txt, requirements2.txt, update_reqs.py"
+
+  σ₆.₂_architectural_evolution_patterns:
+    description: "Patterns in how the architecture evolved"
+    content:
+      observable_patterns:
+        extension_growth: "26 extension points suggests iterative expansion"
+        tool_proliferation: "23 tools covering diverse capabilities"
+        api_expansion: "73 API endpoints for comprehensive web interface"
+        memory_sophistication: "4 memory areas + consolidation indicates maturity"
+        multi_transport_mcp: "stdio + SSE + streamable HTTP shows protocol evolution"
+      architectural_layers_added_over_time:
+        - "Core agent loop (foundational)"
+        - "Extension system (early expansion)"
+        - "Memory system with FAISS (knowledge capability)"
+        - "Web UI with full REST API (user interface)"
+        - "MCP integration (interoperability)"
+        - "A2A protocol (multi-agent)"
+        - "Projects system (workspace isolation)"
+        - "Scheduler (autonomous operation)"
+        - "Secrets management (security hardening)"
+        - "Voice interface (accessibility)"
+
+  σ₆.₃_chat_persistence_evolution:
+    description: "How conversations are persisted over time"
+    content:
+      module: "python/helpers/persist_chat.py"
+      features:
+        - "Save/load chat state"
+        - "History serialization/deserialization"
+        - "Backup integration"
+
+cross_references:
+  - target: "δ₃ ARCHITECTURAL"
+    relationship: "architecture_evolves"
+    strength: 0.52
+  - target: "δ₁₀ PHILOSOPHICAL"
+    relationship: "principles_guide_evolution"
+    strength: 0.62

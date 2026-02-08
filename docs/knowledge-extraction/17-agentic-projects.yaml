@@ -1,0 +1,95 @@
+##############################################################################
+#  δ₁₇ AGENTIC-PROJECTS DIMENSION — Projects System
+##############################################################################
+
+dimension:
+  id: "δ₁₇"
+  name: "AGENTIC-PROJECTS"
+  priority: P0
+  completeness: 1.0
+  confidence: 0.88
+
+sub_dimensions:
+
+  σ₁₇.₁_project_architecture:
+    description: "Project structure, .a0proj directory, BasicProjectData"
+    content:
+      module: "python/helpers/projects.py"
+      root_directory: "usr/projects/{project_name}/"
+      meta_directory: ".a0proj/"
+      meta_contents:
+        - "project.json: Project configuration (BasicProjectData)"
+        - "instructions/: Project-specific instruction files"
+        - "knowledge/: Project-specific knowledge files"
+        - "secrets.env: Project-specific secrets"
+      data_models:
+        BasicProjectData:
+          fields: ["title", "description", "instructions", "color", "git_url", "memory", "file_structure"]
+        EditProjectData:
+          extends: "BasicProjectData"
+          additional: ["name", "instruction_files_count", "knowledge_files_count", "variables", "secrets", "subagents", "git_status"]
+        FileStructureInjectionSettings:
+          fields: ["enabled", "max_depth", "max_files", "max_folders", "max_lines", "gitignore"]
+        SubAgentSettings:
+          fields: ["enabled"]
+
+  σ₁₇.₂_project_activation:
+    description: "Context activation mechanism"
+    content:
+      context_key: "CONTEXT_DATA_KEY_PROJECT = 'project'"
+      activation: "context.set_data('project', project_name)"
+      scope: "Per-AgentContext association"
+      deactivation: "context.set_data('project', None)"
+
+  σ₁₇.₃_prompt_injection:
+    description: "Project context injection into agent prompts"
+    content:
+      extension: "_75_include_project_extras.py in message_loop_prompts_after"
+      injected_data:
+        - "project_path: Working directory path"
+        - "project_name: Project identifier"
+        - "description: Project description"
+        - "instructions: Combined instruction files content"
+        - "knowledge: Project-specific knowledge"
+        - "file_structure: Directory tree (gitignore-filtered)"
+      template: "agent.extras.project.file_structure.md"
+
+  σ₁₇.₄_isolation_mechanisms:
+    description: "Working directory, memory, knowledge, secrets isolation"
+    content:
+      memory_modes:
+        own: "Project-specific memory subdirectory"
+        global: "Shared global memory (default)"
+      field: "BasicProjectData.memory: Literal['own', 'global']"
+      secrets_isolation: |
+        .a0proj/secrets.env merged with global usr/secrets.env.
+        Project secrets take precedence over global secrets.
+      knowledge_isolation: |
+        .a0proj/knowledge/ contains project-specific knowledge files.
+        These are indexed separately and recalled in project context.
+      working_directory: "usr/projects/{project_name}/ as CWD"
+
+  σ₁₇.₅_file_structure_injection:
+    description: "Gitignore-filtered directory tree injection"
+    content:
+      settings: "FileStructureInjectionSettings in BasicProjectData.file_structure"
+      parameters:
+        enabled: "bool — enable/disable injection"
+        max_depth: "int — maximum directory depth"
+        max_files: "int — maximum files shown"
+        max_folders: "int — maximum folders shown"
+        max_lines: "int — maximum output lines"
+        gitignore: "str — custom gitignore patterns"
+      helper: "python/helpers/file_tree.py"
+      purpose: "Give agent awareness of project file structure"
+
+cross_references:
+  - target: "δ₁₄ AGENTIC-MEMORY"
+    relationship: "project_memory_isolation"
+    strength: 0.92
+  - target: "δ₁₈ AGENTIC-SECRETS"
+    relationship: "project_secrets"
+    strength: 0.85
+  - target: "δ₇ CONFIGURATIONAL"
+    relationship: "project_settings"
+    strength: 0.75
